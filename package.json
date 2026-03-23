@@ -1,0 +1,14 @@
+{
+  "name": "nyay-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nyay-AI full-stack legal assistance platform",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\"",
+    "server": "npm run dev --prefix server",
+    "client": "npm start --prefix client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
