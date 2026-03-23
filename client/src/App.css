@@ -6,7 +6,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 24px;
+  gap: 18px;
+  padding: 16px 24px;
   background: rgba(255, 255, 255, 0.88);
   border-bottom: 1px solid #d8e4df;
   -webkit-backdrop-filter: blur(8px);
@@ -18,12 +19,12 @@
 
 .brand-wrap h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
 }
 
 .brand-wrap p {
   margin: 0;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #526562;
 }
 
@@ -46,7 +47,7 @@
   border-radius: 999px;
   background: #f1f8f5;
   color: #1e3833;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .clock-pill {
@@ -54,23 +55,24 @@
   border-radius: 999px;
   background: #e9f2ff;
   color: #1d426f;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
 }
 
 .navbar-links {
   display: flex;
   gap: 8px;
-  flex: 1;
-  margin-left: 24px;
+  margin-left: auto;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .navbar-links .nav-link {
-  padding: 8px 14px;
+  padding: 9px 16px;
   border-radius: 8px;
   text-decoration: none;
   color: #1e3833;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   transition: background 0.2s ease;
 }
@@ -88,7 +90,7 @@
   border-radius: 999px;
   background: #f1f8f5;
   color: #1e3833;
-  font-size: 0.9rem;
+  font-size: 1rem;
   border: none;
   cursor: pointer;
   font-weight: 600;
@@ -143,7 +145,7 @@
   color: #1e3833;
   text-decoration: none;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.98rem;
   transition: background 0.2s ease;
 }
 
@@ -190,7 +192,7 @@
 .page-header p {
   margin: 0;
   color: #4e6661;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .case-item,
@@ -242,7 +244,7 @@
   padding: 8px 0;
   border-top: 1px solid #e3eeea;
   border-bottom: 1px solid #e3eeea;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #4e6661;
 }
 
@@ -454,6 +456,7 @@ textarea {
 .login-card.advanced p {
   margin: 0;
   color: #4e6661;
+  font-size: 1rem;
 }
 
 .auth-form {
@@ -465,7 +468,7 @@ textarea {
 .error-text {
   margin: 0;
   color: #b00020;
-  font-size: 0.9rem;
+  font-size: 0.98rem;
 }
 
 .link-btn {
@@ -573,7 +576,7 @@ textarea {
 
 .summary-item span {
   color: #4e6661;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .info-text {
@@ -777,7 +780,7 @@ textarea {
 /* ========== SETTINGS PAGE STYLES ========== */
 
 .settings-container {
-  max-width: 700px;
+  width: 100%;
 }
 
 .settings-header {
@@ -793,6 +796,7 @@ textarea {
 .settings-header p {
   margin: 0;
   color: #4e6661;
+  font-size: 1rem;
 }
 
 .settings-section {
@@ -817,7 +821,7 @@ textarea {
 .section-header p {
   margin: 0;
   color: #4e6661;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .setting-item {
@@ -850,7 +854,7 @@ textarea {
 .setting-description {
   margin: 0;
   color: #4e6661;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 /* Toggle Switch */
@@ -941,7 +945,7 @@ textarea {
 .input-unit {
   color: #4e6661;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   white-space: nowrap;
 }
 
@@ -958,7 +962,7 @@ textarea {
   margin: 0;
   color: #1e5a4e;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /* ========== RESOURCES PORTAL STYLES ========== */
@@ -1155,7 +1159,7 @@ textarea {
 }
 
 .official-link-card small {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #4d6762;
   overflow-wrap: anywhere;
 }
@@ -1164,7 +1168,7 @@ textarea {
   display: block;
   margin-top: 10px;
   color: #627a75;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 900px) {
