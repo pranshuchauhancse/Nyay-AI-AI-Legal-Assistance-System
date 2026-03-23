@@ -1,66 +1,32 @@
-### ⚖️ Nyay-AI – AI Legal Assistance System
+## Nyay-AI: AI Legal Assistance System
 
-Nyay-AI is an AI-powered legal assistance platform designed to simplify and democratize access to legal services. It enables individuals and legal professionals to understand legal procedures, resolve common queries, and manage case workflows through a modern, user-friendly dashboard.
+Nyay-AI is a legal operations and assistance platform built to make legal workflows faster, structured, and more accessible for citizens and legal professionals.
 
-Accessing legal help is often complex, time-consuming, and expensive. Nyay-AI addresses this challenge by leveraging artificial intelligence and full-stack web technologies to provide instant, structured, and accessible legal guidance.
+### Key Features
 
----
+- AI-powered legal query support
+- Case tracking and status management
+- Client and document operations
+- Appointment and schedule handling
+- Dashboard analytics for legal workload visibility
+- Role-based legal resource desk for citizen, police, lawyer, and judge workflows
 
-### 🚀 Key Features
+### Tech Stack
 
-* 🤖 **AI-Powered Legal Assistant**
-  Allows users to ask legal questions in natural language and receive instant, context-aware responses.
+- Frontend: React, HTML, CSS
+- Backend: Node.js, Express.js
+- Database: MongoDB
+- Integration: REST APIs
 
-* 📂 **Case Tracking & Management**
-  Create, monitor, and update case progress with structured timelines and status tracking.
+### Objectives
 
-* 👤 **Client & Document Management**
-  Organize client data and legal documents securely in a centralized system.
+- Improve access to practical legal information
+- Reduce friction in legal process management
+- Centralize case, client, and schedule workflows
+- Increase legal team productivity with automation support
 
-* 📅 **Appointment Scheduling**
-  Manage consultations and receive reminders for meetings and court dates.
+### Ownership
 
-* 📊 **Dashboard & Analytics**
-  Visual insights into case statistics and workflow efficiency.
+All rights reserved.
 
----
-
-### 🛠️ Tech Stack
-
-* **Frontend:** React.js, HTML, CSS
-* **Backend:** Node.js, Express.js
-* **Database:** MongoDB
-* **Tools:** REST APIs, Git
-
----
-
-### 🎯 Objectives
-
-* Simplify access to legal knowledge
-* Reduce dependency on costly consultations for basic queries
-* Provide a centralized legal management system
-* Improve productivity through automation
-
----
-
-### 🌍 Impact
-
-Nyay-AI empowers users by making legal information more accessible and transparent. It also supports legal professionals by streamlining workflows, improving organization, and enhancing client communication.
-
----
-
-### 🔮 Future Enhancements
-
-* Real-time legal database integration
-* Multilingual support
-* AI-based document analysis
-* Mobile application
-* Advanced security features
-
----
-
-### ⭐ Vision
-
-Nyay-AI aims to bridge the gap between legal services and the public by making legal assistance simple, fast, and accessible to everyone.
-
-> 💡 *"Nyay" means justice — bringing accessible justice through technology.*
+Copyright (c) 2026 Rohit Chauhan.

@@ -1,9 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg-1: #edf5f2;
-  --bg-2: #f8fcfa;
-  --text-primary: #123a33;
+  --bg-1: #edf7f3;
+  --bg-2: #f6fbff;
+  --bg-3: #fefcf7;
+  --text-primary: #163f37;
+  --heading-color: #0f312b;
 }
 
 * {
@@ -12,11 +14,13 @@
 
 body {
   margin: 0;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
   background:
-    radial-gradient(circle at 10% 10%, rgba(111, 180, 154, 0.2), transparent 30%),
-    radial-gradient(circle at 80% 30%, rgba(74, 121, 114, 0.12), transparent 28%),
-    linear-gradient(145deg, var(--bg-1), var(--bg-2));
+    radial-gradient(circle at 7% 12%, rgba(68, 162, 133, 0.17), transparent 32%),
+    radial-gradient(circle at 90% 18%, rgba(27, 84, 121, 0.12), transparent 34%),
+    linear-gradient(148deg, var(--bg-1), var(--bg-2) 58%, var(--bg-3));
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -26,5 +30,18 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: 'Source Serif 4', serif;
+  font-family: 'Literata', serif;
+  color: var(--heading-color);
+}
+
+p,
+li,
+label,
+input,
+select,
+textarea,
+button,
+small,
+span {
+  font-size: 1rem;
 }

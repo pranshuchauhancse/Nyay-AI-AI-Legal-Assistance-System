@@ -27,6 +27,9 @@ function ProtectedLayout() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      <footer className="app-footer">
+        <small>Copyright © 2026 Rohit Chauhan. All rights reserved.</small>
+      </footer>
     </div>
   );
 }

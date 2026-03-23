@@ -26,6 +26,7 @@ export default function Navbar() {
       <div className="brand-wrap">
         <h1>Nyay-AI</h1>
         <p>Accessible Legal Intelligence</p>
+        <small className="brand-copyright">Copyright © Rohit Chauhan</small>
       </div>
 
       <nav className="navbar-links">

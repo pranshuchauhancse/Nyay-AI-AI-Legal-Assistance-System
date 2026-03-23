@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 
 export default function Profile() {
   const { user, login } = useAuth();
-  const [form, setForm] = useState({ name: '', email: '' });
+  const [form, setForm] = useState({ name: '', email: '', role: 'lawyer' });
   const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [message, setMessage] = useState('');
   const [passwordMessage, setPasswordMessage] = useState('');
@@ -17,11 +17,16 @@ export default function Profile() {
     const loadProfile = async () => {
       try {
         const { data } = await api.get('/auth/me');
-        setForm({ name: data.name || '', email: data.email || '' });
+        setForm({
+          name: data.name || '',
+          email: data.email || '',
+          role: data.role || user?.role || 'lawyer',
+        });
       } catch {
         setForm({
           name: user?.name || '',
           email: user?.email || '',
+          role: user?.role || 'lawyer',
         });
       }
     };
@@ -38,6 +43,7 @@ export default function Profile() {
       const payload = {
         name: form.name,
         email: form.email,
+        role: form.role,
       };
 
       const { data } = await api.put('/auth/me', payload);
@@ -125,9 +131,21 @@ export default function Profile() {
               />
             </div>
 
+            <div className="form-group">
+              <label>Legal Role *</label>
+              <select
+                value={form.role}
+                onChange={(e) => setForm((prev) => ({ ...prev, role: e.target.value }))}
+                required
+              >
+                <option value="lawyer">Lawyer</option>
+                <option value="client">Client</option>
+              </select>
+            </div>
+
             <div className="profile-actions">
               <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? '⏳ Saving...' : ' Save Changes'}
+                {loading ? 'Saving...' : 'Save Changes'}
               </button>
               <button
                 type="button"
@@ -141,7 +159,7 @@ export default function Profile() {
               </button>
             </div>
 
-            {message && <p className={`form-message ${message.includes('') ? 'success' : 'error'}`}>{message}</p>}
+            {message && <p className={`form-message ${message.includes('successfully') ? 'success' : 'error'}`}>{message}</p>}
           </form>
         ) : (
           <div className="profile-display">
@@ -155,7 +173,13 @@ export default function Profile() {
             </div>
             <div className="profile-field">
               <span className="field-label">Legal Role</span>
-              <span className="field-value badge-primary">{user?.role === 'admin' ? '⭐ Administrator' : ' ' + (user?.role || 'Lawyer')}</span>
+              <span className="field-value badge-primary">
+                {form.role === 'admin'
+                  ? 'Administrator'
+                  : form.role === 'client'
+                    ? 'Client'
+                    : 'Lawyer'}
+              </span>
             </div>
             <div className="profile-field">
               <span className="field-label">Account Status</span>
@@ -213,7 +237,7 @@ export default function Profile() {
 
             <div className="profile-actions">
               <button type="submit" className="btn-primary" disabled={passwordLoading}>
-                {passwordLoading ? '⏳ Updating...' : ' Update Password'}
+                {passwordLoading ? 'Updating...' : 'Update Password'}
               </button>
               <button
                 type="button"
@@ -228,7 +252,7 @@ export default function Profile() {
               </button>
             </div>
 
-            {passwordMessage && <p className={`form-message ${passwordMessage.includes('') ? 'success' : 'error'}`}>{passwordMessage}</p>}
+            {passwordMessage && <p className={`form-message ${passwordMessage.includes('successfully') ? 'success' : 'error'}`}>{passwordMessage}</p>}
           </form>
         )}
       </section>

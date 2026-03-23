@@ -83,7 +83,7 @@ export default function Login() {
 
         <section className="login-card advanced">
           <h2>{isRegister ? 'Create Your Account' : 'Welcome Back'}</h2>
-          <p>Right side auth panel for login/logout and secure access.</p>
+          <p>Secure sign in for legal operations, references, and case workflows.</p>
 
           <form onSubmit={onSubmit} className="auth-form">
             {isRegister && (
@@ -152,6 +152,8 @@ export default function Login() {
           >
             {isRegister ? 'Have an account? Login' : 'New here? Register'}
           </button>
+
+          <small className="login-copyright">Copyright © 2026 Rohit Chauhan</small>
         </section>
       </section>
     </main>

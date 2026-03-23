@@ -27,6 +27,14 @@
   color: #526562;
 }
 
+.brand-copyright {
+  display: block;
+  margin-top: 3px;
+  color: #6a807c;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
 .user-actions {
   display: flex;
   align-items: center;
@@ -152,6 +160,14 @@
   padding: 24px;
   min-height: calc(100vh - 74px);
   width: 100%;
+}
+
+.app-footer {
+  border-top: 1px solid #d7e4df;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 24px;
+  color: #5a726d;
+  font-size: 0.82rem;
 }
 
 .page-container {
@@ -600,26 +616,6 @@ textarea {
 
 .profile-header > div,
 .security-header > div {
-
-  .navbar-links {
-    display: none;
-  }
-
-  .profile-field {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .setting-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .setting-info {
-    margin-right: 0;
-  }
   flex: 1;
 }
 
@@ -961,6 +957,212 @@ textarea {
   font-size: 0.9rem;
 }
 
+/* ========== RESOURCES PORTAL STYLES ========== */
+
+.legal-portal {
+  gap: 18px;
+}
+
+.legal-portal-hero {
+  background:
+    radial-gradient(circle at 5% 10%, rgba(32, 122, 104, 0.17), transparent 35%),
+    radial-gradient(circle at 90% 75%, rgba(17, 60, 95, 0.1), transparent 40%),
+    linear-gradient(130deg, #f8fdfb, #f2f9f6);
+}
+
+.legal-portal-hero h2 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #123a33;
+}
+
+.legal-portal-hero p {
+  margin: 0;
+  color: #315a52;
+  line-height: 1.7;
+}
+
+.legal-portal-meta {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.legal-portal-meta span {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: #def2eb;
+  color: #14463d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.legal-search-block {
+  display: grid;
+  gap: 8px;
+}
+
+.legal-search-block label {
+  font-weight: 700;
+  color: #17463f;
+}
+
+.legal-search-block small {
+  color: #4e6661;
+}
+
+.role-switcher-block h3,
+.role-deep-dive h3,
+.statute-depth-block h3,
+.links-depth-block h3 {
+  margin: 0 0 10px;
+  color: #123a33;
+}
+
+.role-switcher-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.role-switcher-btn {
+  border: 1px solid #c4d8d2;
+  background: #f5fbf8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #1d4e45;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.role-switcher-btn:hover {
+  background: #e6f4ef;
+}
+
+.role-switcher-btn.active {
+  background: linear-gradient(120deg, #175448, #1e6d5d);
+  color: #ffffff;
+  border-color: #175448;
+}
+
+.role-deep-dive > p {
+  margin: 0 0 16px;
+  color: #385c56;
+  line-height: 1.65;
+}
+
+.role-columns article h4,
+.workflow-card h4,
+.statute-depth-card h4,
+.link-group-card h4 {
+  margin: 0 0 8px;
+  color: #123a33;
+}
+
+.workflow-stack {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.workflow-card {
+  border: 1px solid #d7e8e3;
+  border-radius: 12px;
+  background: #fbfffd;
+  padding: 14px;
+}
+
+.workflow-card ol {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+  color: #355853;
+}
+
+.statute-depth-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.statute-depth-card {
+  border: 1px solid #d7e8e3;
+  border-radius: 12px;
+  padding: 14px;
+  background: #f9fffc;
+}
+
+.statute-depth-card strong {
+  display: block;
+  margin-top: 8px;
+  color: #19463f;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.links-depth-block p {
+  margin: 0 0 14px;
+  color: #3c6059;
+}
+
+.links-group-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.link-group-card {
+  border: 1px solid #d7e8e3;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fbfffd;
+}
+
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.official-link-card {
+  display: grid;
+  gap: 4px;
+  text-decoration: none;
+  border: 1px solid #c8ddd7;
+  border-radius: 10px;
+  padding: 10px;
+  background: #f2faf7;
+  color: #124138;
+  transition: all 0.2s ease;
+}
+
+.official-link-card:hover {
+  background: #e6f4ef;
+  border-color: #a8c9bf;
+}
+
+.official-link-card span {
+  font-weight: 700;
+}
+
+.official-link-card small {
+  font-size: 0.75rem;
+  color: #4d6762;
+  overflow-wrap: anywhere;
+}
+
+.login-copyright {
+  display: block;
+  margin-top: 10px;
+  color: #627a75;
+  font-size: 0.8rem;
+}
+
 @media (max-width: 900px) {
   .page-grid.two-col,
   .stats-row {
@@ -1025,5 +1227,15 @@ textarea {
   .detail-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .role-switcher-grid,
+  .statute-depth-grid,
+  .link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-portal-hero h2 {
+    font-size: 1.5rem;
   }
 }
