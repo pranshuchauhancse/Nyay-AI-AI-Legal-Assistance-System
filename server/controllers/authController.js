@@ -53,8 +53,35 @@ const getMyProfile = async (req, res) => {
   res.json(req.user);
 };
 
+const updateMyProfile = async (req, res) => {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  user.name = req.body.name || user.name;
+  user.email = req.body.email || user.email;
+
+  if (req.body.password) {
+    user.password = req.body.password;
+  }
+
+  const updated = await user.save();
+
+  res.json({
+    _id: updated._id,
+    name: updated.name,
+    email: updated.email,
+    role: updated.role,
+    token: generateToken(updated._id),
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   getMyProfile,
+  updateMyProfile,
 };

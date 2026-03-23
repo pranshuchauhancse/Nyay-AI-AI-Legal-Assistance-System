@@ -30,11 +30,16 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (nextUser) => {
+    setUser(nextUser);
+  };
+
   const value = useMemo(() => ({
     user,
     isAuthenticated: Boolean(user),
     login,
     logout,
+    updateUser,
   }), [user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

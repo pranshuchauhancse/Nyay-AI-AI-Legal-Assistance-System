@@ -5,6 +5,8 @@ const links = [
   { to: '/cases', label: 'Cases' },
   { to: '/clients', label: 'Clients' },
   { to: '/appointments', label: 'Appointments' },
+  { to: '/profile', label: 'Profile' },
+  { to: '/settings', label: 'Settings' },
 ];
 
 export default function Sidebar() {
