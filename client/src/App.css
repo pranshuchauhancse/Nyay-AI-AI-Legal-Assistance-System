@@ -593,7 +593,7 @@ textarea {
 .profile-container {
   display: grid;
   gap: 20px;
-  max-width: 900px;
+  width: 100%;
 }
 
 .profile-card,
@@ -622,18 +622,20 @@ textarea {
 .profile-header h2 {
   margin: 0 0 6px;
   color: #1e3833;
+  font-size: 1.9rem;
 }
 
 .profile-header p,
 .security-header p {
   margin: 0;
   color: #4e6661;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .security-header h3 {
   margin: 0 0 6px;
   color: #1e3833;
+  font-size: 1.5rem;
 }
 
 .profile-form,
@@ -650,7 +652,7 @@ textarea {
 .form-group label {
   color: #1e3833;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .form-group input,
@@ -686,13 +688,14 @@ textarea {
 
 .field-label {
   color: #4e6661;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
 .field-value {
   color: #1e3833;
   font-weight: 700;
+  font-size: 1rem;
 }
 
 .badge-primary,
@@ -732,6 +735,7 @@ textarea {
 .security-label {
   color: #4e6661;
   font-weight: 600;
+  font-size: 1rem;
 }
 
 .security-status {
