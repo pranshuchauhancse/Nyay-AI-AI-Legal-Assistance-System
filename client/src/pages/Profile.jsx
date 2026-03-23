@@ -43,9 +43,9 @@ export default function Profile() {
       const { data } = await api.put('/auth/me', payload);
       login(data);
       setIsEditing(false);
-      setMessage('✓ Profile updated successfully.');
+      setMessage(' Profile updated successfully.');
     } catch (error) {
-      setMessage('✗ ' + (error.response?.data?.message || 'Could not update profile right now.'));
+      setMessage(' ' + (error.response?.data?.message || 'Could not update profile right now.'));
     } finally {
       setLoading(false);
     }
@@ -55,12 +55,12 @@ export default function Profile() {
     event.preventDefault();
     
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordMessage('✗ Passwords do not match.');
+      setPasswordMessage(' Passwords do not match.');
       return;
     }
 
     if (passwordForm.newPassword.length < 6) {
-      setPasswordMessage('✗ Password must be at least 6 characters.');
+      setPasswordMessage(' Password must be at least 6 characters.');
       return;
     }
 
@@ -73,10 +73,10 @@ export default function Profile() {
       });
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordChange(false);
-      setPasswordMessage('✓ Password changed successfully.');
+      setPasswordMessage(' Password changed successfully.');
       setTimeout(() => setPasswordMessage(''), 3000);
     } catch (error) {
-      setPasswordMessage('✗ ' + (error.response?.data?.message || 'Could not change password.'));
+      setPasswordMessage(' ' + (error.response?.data?.message || 'Could not change password.'));
     } finally {
       setPasswordLoading(false);
     }
@@ -96,7 +96,7 @@ export default function Profile() {
               onClick={() => setIsEditing(true)}
               type="button"
             >
-              ✎ Edit Profile
+               Edit Profile
             </button>
           )}
         </div>
@@ -127,7 +127,7 @@ export default function Profile() {
 
             <div className="profile-actions">
               <button type="submit" className="btn-primary" disabled={loading}>
-                {loading ? '⏳ Saving...' : '💾 Save Changes'}
+                {loading ? '⏳ Saving...' : ' Save Changes'}
               </button>
               <button
                 type="button"
@@ -137,11 +137,11 @@ export default function Profile() {
                   setMessage('');
                 }}
               >
-                ✕ Cancel
+                 Cancel
               </button>
             </div>
 
-            {message && <p className={`form-message ${message.includes('✓') ? 'success' : 'error'}`}>{message}</p>}
+            {message && <p className={`form-message ${message.includes('') ? 'success' : 'error'}`}>{message}</p>}
           </form>
         ) : (
           <div className="profile-display">
@@ -155,11 +155,11 @@ export default function Profile() {
             </div>
             <div className="profile-field">
               <span className="field-label">Legal Role</span>
-              <span className="field-value badge-primary">{user?.role === 'admin' ? '⭐ Administrator' : '⚖️ ' + (user?.role || 'Lawyer')}</span>
+              <span className="field-value badge-primary">{user?.role === 'admin' ? '⭐ Administrator' : ' ' + (user?.role || 'Lawyer')}</span>
             </div>
             <div className="profile-field">
               <span className="field-label">Account Status</span>
-              <span className="field-value badge-success">✓ Active</span>
+              <span className="field-value badge-success"> Active</span>
             </div>
           </div>
         )}
@@ -168,7 +168,7 @@ export default function Profile() {
       <section className="security-card">
         <div className="security-header">
           <div>
-            <h3>🔐 Security Settings</h3>
+            <h3> Security Settings</h3>
             <p className="text-muted">Manage your password and security preferences</p>
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function Profile() {
               onClick={() => setShowPasswordChange(true)}
               type="button"
             >
-              🔑 Change Password
+               Change Password
             </button>
           </div>
         ) : (
@@ -213,7 +213,7 @@ export default function Profile() {
 
             <div className="profile-actions">
               <button type="submit" className="btn-primary" disabled={passwordLoading}>
-                {passwordLoading ? '⏳ Updating...' : '✓ Update Password'}
+                {passwordLoading ? '⏳ Updating...' : ' Update Password'}
               </button>
               <button
                 type="button"
@@ -224,11 +224,11 @@ export default function Profile() {
                   setPasswordMessage('');
                 }}
               >
-                ✕ Cancel
+                 Cancel
               </button>
             </div>
 
-            {passwordMessage && <p className={`form-message ${passwordMessage.includes('✓') ? 'success' : 'error'}`}>{passwordMessage}</p>}
+            {passwordMessage && <p className={`form-message ${passwordMessage.includes('') ? 'success' : 'error'}`}>{passwordMessage}</p>}
           </form>
         )}
       </section>

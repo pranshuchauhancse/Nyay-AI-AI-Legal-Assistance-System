@@ -40,7 +40,13 @@ export default function Login() {
       login(data);
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Authentication failed');
+      if (err.response?.status === 401) {
+        setError('Invalid email or password.');
+      } else if (err.response?.data?.message) {
+        setError(err.response.data.message);
+      } else {
+        setError('Sign in is temporarily unavailable. Please try again shortly.');
+      }
     } finally {
       setLoading(false);
     }

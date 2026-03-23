@@ -26,7 +26,7 @@ export default function Settings() {
   const onSave = (event) => {
     event.preventDefault();
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-    setSavedMessage('✓ Settings saved successfully');
+    setSavedMessage(' Settings saved successfully');
     setTimeout(() => setSavedMessage(''), 3000);
   };
 
@@ -92,7 +92,7 @@ export default function Settings() {
   return (
     <div className="settings-container">
       <div className="settings-header">
-        <h2>⚙️ Settings & Preferences</h2>
+        <h2> Settings & Preferences</h2>
         <p>Customize your Nyay-AI experience</p>
       </div>
 
@@ -100,12 +100,12 @@ export default function Settings() {
         {/* Dashboard Settings */}
         <section className="settings-section">
           <div className="section-header">
-            <h3>📊 Dashboard</h3>
+            <h3> Dashboard</h3>
             <p>Configure dashboard behavior and display options</p>
           </div>
 
           <SettingToggle
-            icon="🔄"
+            icon=""
             label="Auto Refresh Data"
             description="Automatically refresh dashboard data at regular intervals"
             checked={settings.autoRefreshDashboard}
@@ -113,7 +113,7 @@ export default function Settings() {
           />
 
           <SettingInput
-            icon="⏱️"
+            icon="⏱"
             label="Refresh Interval"
             description="How often to refresh data (in seconds)"
             value={settings.dashboardRefreshSeconds}
@@ -127,7 +127,7 @@ export default function Settings() {
           />
 
           <SettingToggle
-            icon="📦"
+            icon=""
             label="Compact Layout"
             description="Use condensed table and card layouts"
             checked={settings.compactTables}
@@ -138,21 +138,21 @@ export default function Settings() {
         {/* AI Settings */}
         <section className="settings-section">
           <div className="section-header">
-            <h3>🤖 AI Assistant</h3>
+            <h3> AI Assistant</h3>
             <p>Configure AI legal guidance preferences</p>
           </div>
 
           <SettingSelect
-            icon="💬"
+            icon=""
             label="Response Style"
             description="Tone and complexity of AI-generated legal guidance"
             value={settings.aiResponseStyle}
             onChange={(e) => setSettings((prev) => ({ ...prev, aiResponseStyle: e.target.value }))}
             options={[
-              { value: 'balanced', label: '⚖️ Balanced' },
-              { value: 'formal', label: '📜 Formal' },
-              { value: 'simple', label: '🎯 Simple Language' },
-              { value: 'detailed', label: '📚 Detailed Legal Notes' },
+              { value: 'balanced', label: ' Balanced' },
+              { value: 'formal', label: ' Formal' },
+              { value: 'simple', label: ' Simple Language' },
+              { value: 'detailed', label: ' Detailed Legal Notes' },
             ]}
           />
         </section>
@@ -160,12 +160,12 @@ export default function Settings() {
         {/* Notifications */}
         <section className="settings-section">
           <div className="section-header">
-            <h3>🔔 Notifications</h3>
+            <h3> Notifications</h3>
             <p>Control how and when you receive notifications</p>
           </div>
 
           <SettingToggle
-            icon="📧"
+            icon=""
             label="Email Notifications"
             description="Receive updates about cases and appointments via email"
             checked={settings.reminderEmails}
@@ -184,27 +184,27 @@ export default function Settings() {
         {/* System */}
         <section className="settings-section">
           <div className="section-header">
-            <h3>🎨 Appearance</h3>
+            <h3> Appearance</h3>
             <p>Customize how Nyay-AI looks</p>
           </div>
 
           <SettingSelect
-            icon="🌙"
+            icon=""
             label="Theme"
             description="Choose your preferred color theme"
             value={settings.theme}
             onChange={(e) => setSettings((prev) => ({ ...prev, theme: e.target.value }))}
             options={[
-              { value: 'light', label: '☀️ Light' },
-              { value: 'dark', label: '🌙 Dark' },
-              { value: 'auto', label: '⚡ Auto (System)' },
+              { value: 'light', label: ' Light' },
+              { value: 'dark', label: ' Dark' },
+              { value: 'auto', label: ' Auto (System)' },
             ]}
           />
         </section>
 
         <div className="settings-actions">
           <button type="submit" className="btn-primary">
-            💾 Save All Settings
+             Save All Settings
           </button>
           {savedMessage && (
             <p className="success-message">{savedMessage}</p>

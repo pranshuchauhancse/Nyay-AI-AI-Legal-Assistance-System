@@ -85,13 +85,13 @@ export default function Appointments() {
 
   const getTypeIcon = (type) => {
     const icons = {
-      'Client Meeting': '👤',
-      'Court Hearing': '⚖️',
-      'Document Review': '📄',
-      'Team Meeting': '👥',
-      'Other': '📌'
+      'Client Meeting': '',
+      'Court Hearing': '',
+      'Document Review': '',
+      'Team Meeting': '',
+      'Other': ''
     };
-    return icons[type] || '📌';
+    return icons[type] || '';
   };
 
   const getTypeColor = (type) => {
@@ -124,7 +124,7 @@ export default function Appointments() {
     <div className="page-container">
       <section className="page-header card">
         <div>
-          <h2>📅 Appointment Scheduler</h2>
+          <h2> Appointment Scheduler</h2>
           <p>Manage client meetings, court hearings, document reviews, and other legal activities</p>
         </div>
       </section>
@@ -165,7 +165,7 @@ export default function Appointments() {
       <section className="page-grid two-col">
         {/* Add/Edit Form */}
         <section className="card">
-          <h3>{editingId ? '✏️ Edit Appointment' : '➕ Schedule New Appointment'}</h3>
+          <h3>{editingId ? ' Edit Appointment' : ' Schedule New Appointment'}</h3>
           <form className="stack-form" onSubmit={addAppointment}>
             <input
               value={form.title}
@@ -195,11 +195,11 @@ export default function Appointments() {
             />
             <div className="action-row">
               <button className="btn-primary" type="submit">
-                {editingId ? '💾 Update Appointment' : '➕ Add Appointment'}
+                {editingId ? ' Update Appointment' : ' Add Appointment'}
               </button>
               {editingId && (
                 <button className="btn-secondary" type="button" onClick={onCancelEdit}>
-                  ✕ Cancel
+                   Cancel
                 </button>
               )}
             </div>
@@ -208,7 +208,7 @@ export default function Appointments() {
 
         {/* Filter & Search */}
         <section className="card">
-          <h3>🔍 Filter & Search</h3>
+          <h3> Filter & Search</h3>
           <div className="stack-form">
             <input
               type="text"
@@ -222,7 +222,7 @@ export default function Appointments() {
                 <option key={type} value={type}>{getTypeIcon(type)} {type}</option>
               ))}
             </select>
-            <small>📌 {filteredAppointments.length} appointment(s) found</small>
+            <small> {filteredAppointments.length} appointment(s) found</small>
             <div style={{ marginTop: '12px', padding: '12px', background: '#f8faff', borderRadius: '8px' }}>
               <strong style={{ color: '#1e3833' }}>Pro Tip:</strong>
               <p style={{ margin: '4px 0 0', color: '#4e6661', fontSize: '0.9rem' }}>
@@ -236,7 +236,7 @@ export default function Appointments() {
       {/* Upcoming Appointments */}
       {filteredAppointments.some(a => isUpcoming(a.datetime)) && (
         <section className="card">
-          <h3>📆 Upcoming Appointments ({filteredAppointments.filter(a => isUpcoming(a.datetime)).length})</h3>
+          <h3> Upcoming Appointments ({filteredAppointments.filter(a => isUpcoming(a.datetime)).length})</h3>
           <div className="list-wrap">
             {filteredAppointments.filter(a => isUpcoming(a.datetime)).map((item) => (
               <article key={item.id} className="appointment-item" style={{ borderLeft: `4px solid ${getTypeColor(item.type)}` }}>
@@ -254,12 +254,12 @@ export default function Appointments() {
                   </span>
                 </div>
                 <div className="appointment-details">
-                  <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>🕐 {formatDateTime(item.datetime)}</span>
-                  {item.location && <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📍 {item.location}</span>}
+                  <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> {formatDateTime(item.datetime)}</span>
+                  {item.location && <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> {item.location}</span>}
                 </div>
                 <div className="action-row">
-                  <button className="btn-secondary" onClick={() => onEdit(item)} type="button">✎ Edit</button>
-                  <button className="btn-danger" onClick={() => onDelete(item.id)} type="button">🗑️ Delete</button>
+                  <button className="btn-secondary" onClick={() => onEdit(item)} type="button"> Edit</button>
+                  <button className="btn-danger" onClick={() => onDelete(item.id)} type="button"> Delete</button>
                 </div>
               </article>
             ))}
@@ -270,12 +270,12 @@ export default function Appointments() {
       {/* Past Appointments */}
       {items.some(a => !isUpcoming(a.datetime)) && (
         <section className="card">
-          <h3>✅ Completed Appointments ({items.filter(a => !isUpcoming(a.datetime)).length})</h3>
+          <h3> Completed Appointments ({items.filter(a => !isUpcoming(a.datetime)).length})</h3>
           <div className="list-wrap" style={{ opacity: 0.8 }}>
             {items.filter(a => !isUpcoming(a.datetime)).map((item) => (
               <article key={item.id} className="appointment-item">
                 <div className="appointment-header">
-                  <h4>✔️ {item.title}</h4>
+                  <h4> {item.title}</h4>
                   <span style={{ 
                     background: '#999', 
                     color: 'white', 
@@ -288,11 +288,11 @@ export default function Appointments() {
                   </span>
                 </div>
                 <div className="appointment-details">
-                  <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📅 {formatDateTime(item.datetime)}</span>
-                  {item.location && <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📍 {item.location}</span>}
+                  <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> {formatDateTime(item.datetime)}</span>
+                  {item.location && <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> {item.location}</span>}
                 </div>
                 <div className="action-row">
-                  <button className="btn-danger" onClick={() => onDelete(item.id)} type="button">🗑️ Delete</button>
+                  <button className="btn-danger" onClick={() => onDelete(item.id)} type="button"> Delete</button>
                 </div>
               </article>
             ))}
@@ -302,7 +302,7 @@ export default function Appointments() {
 
       {!items.length && (
         <section className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-          <p style={{ color: '#999', fontSize: '1.1rem' }}>📅 No appointments yet. Schedule your first one to get started!</p>
+          <p style={{ color: '#999', fontSize: '1.1rem' }}> No appointments yet. Schedule your first one to get started!</p>
         </section>
       )}
     </div>

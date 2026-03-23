@@ -95,16 +95,16 @@ export default function Clients() {
   const getContactStatus = (client) => {
     const hasEmail = !!client.email;
     const hasPhone = !!client.phone;
-    if (hasEmail && hasPhone) return '✅ Complete';
-    if (hasEmail || hasPhone) return '⚠️ Partial';
-    return '❌ Missing';
+    if (hasEmail && hasPhone) return ' Complete';
+    if (hasEmail || hasPhone) return ' Partial';
+    return ' Missing';
   };
 
   return (
     <div className="page-container">
       <section className="page-header card">
         <div>
-          <h2>👥 Client Management</h2>
+          <h2> Client Management</h2>
           <p>Manage client information, contact details, and case associations</p>
         </div>
       </section>
@@ -138,7 +138,7 @@ export default function Clients() {
 
       <section className="page-grid two-col">
         <section className="card">
-          <h3>{editingId ? '✏️ Edit Client' : '➕ Add New Client'}</h3>
+          <h3>{editingId ? ' Edit Client' : ' Add New Client'}</h3>
           <form className="stack-form" onSubmit={onSubmit}>
             <input
               value={form.name}
@@ -170,11 +170,11 @@ export default function Clients() {
             />
             <div className="action-row">
               <button className="btn-primary" type="submit">
-                {editingId ? '💾 Update Client' : '➕ Add Client'}
+                {editingId ? ' Update Client' : ' Add Client'}
               </button>
               {editingId && (
                 <button className="btn-secondary" type="button" onClick={onCancelEdit}>
-                  ✕ Cancel
+                   Cancel
                 </button>
               )}
             </div>
@@ -182,7 +182,7 @@ export default function Clients() {
         </section>
 
         <section className="card">
-          <h3>🔍 Search & Filter</h3>
+          <h3> Search & Filter</h3>
           <div className="stack-form">
             <input
               type="text"
@@ -190,7 +190,7 @@ export default function Clients() {
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, email, or phone"
             />
-            <small>📌 {filteredClients.length} client(s) found</small>
+            <small> {filteredClients.length} client(s) found</small>
             <div style={{ marginTop: '12px', padding: '12px', background: '#f8faff', borderRadius: '8px' }}>
               <strong style={{ color: '#1e3833' }}>Quick Tips:</strong>
               <ul className="plain-list" style={{ fontSize: '0.9rem', marginTop: '4px' }}>
@@ -204,13 +204,13 @@ export default function Clients() {
       </section>
 
       <section className="card">
-        <h3>📋 All Clients ({filteredClients.length})</h3>
+        <h3> All Clients ({filteredClients.length})</h3>
         <div className="list-wrap">
           {filteredClients.map((client) => (
             <article key={client._id} className="client-item">
               <div className="client-header">
                 <div>
-                  <h4>👤 {client.name}</h4>
+                  <h4> {client.name}</h4>
                   <p style={{ margin: '4px 0 0', color: '#4e6661', fontSize: '0.9rem' }}>
                     {getContactStatus(client)}
                   </p>
@@ -223,7 +223,7 @@ export default function Clients() {
               <div className="client-details">
                 {client.email && (
                   <div className="detail-row">
-                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📧 Email:</span>
+                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> Email:</span>
                     <a href={`mailto:${client.email}`} style={{ color: '#1f6b5d', textDecoration: 'none', fontWeight: '600' }}>
                       {client.email}
                     </a>
@@ -231,7 +231,7 @@ export default function Clients() {
                 )}
                 {client.phone && (
                   <div className="detail-row">
-                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📞 Phone:</span>
+                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> Phone:</span>
                     <a href={`tel:${client.phone}`} style={{ color: '#1f6b5d', textDecoration: 'none', fontWeight: '600' }}>
                       {client.phone}
                     </a>
@@ -239,21 +239,21 @@ export default function Clients() {
                 )}
                 {client.address && (
                   <div className="detail-row">
-                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📍 Address:</span>
+                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> Address:</span>
                     <span style={{ fontWeight: '500' }}>{client.address}</span>
                   </div>
                 )}
                 {client.notes && (
                   <div className="detail-row">
-                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}>📝 Notes:</span>
+                    <span style={{ color: '#4e6661', fontSize: '0.9rem' }}> Notes:</span>
                     <span style={{ fontStyle: 'italic', color: '#39544f' }}>{client.notes}</span>
                   </div>
                 )}
               </div>
 
               <div className="action-row">
-                <button className="btn-secondary" onClick={() => onEdit(client)} type="button">✎ Edit</button>
-                <button className="btn-danger" onClick={() => onDelete(client._id)} type="button">🗑️ Delete</button>
+                <button className="btn-secondary" onClick={() => onEdit(client)} type="button"> Edit</button>
+                <button className="btn-danger" onClick={() => onDelete(client._id)} type="button"> Delete</button>
               </div>
             </article>
           ))}

@@ -113,18 +113,18 @@ export default function Cases() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      'Open': '🟢',
-      'In Progress': '🟡',
-      'Closed': '🔵'
+      'Open': '',
+      'In Progress': '',
+      'Closed': ''
     };
-    return badges[status] || '⚪';
+    return badges[status] || '';
   };
 
   return (
     <div className="page-container">
       <section className="page-header card">
         <div>
-          <h2>📋 Case Management</h2>
+          <h2> Case Management</h2>
           <p>Manage legal cases, track status, priority, and client associations</p>
         </div>
       </section>
@@ -160,7 +160,7 @@ export default function Cases() {
       <section className="page-grid two-col">
         {/* Create/Edit Form */}
         <section className="card">
-          <h3>{editingId ? '✏️ Edit Case' : '➕ Create New Case'}</h3>
+          <h3>{editingId ? ' Edit Case' : ' Create New Case'}</h3>
           <form className="stack-form" onSubmit={onSubmit}>
             <input
               value={form.title}
@@ -212,11 +212,11 @@ export default function Cases() {
             />
             <div className="action-row">
               <button className="btn-primary" type="submit">
-                {editingId ? '💾 Update Case' : '➕ Add Case'}
+                {editingId ? ' Update Case' : ' Add Case'}
               </button>
               {editingId && (
                 <button className="btn-secondary" type="button" onClick={onCancelEdit}>
-                  ✕ Cancel
+                   Cancel
                 </button>
               )}
             </div>
@@ -225,7 +225,7 @@ export default function Cases() {
 
         {/* Filter & Search */}
         <section className="card">
-          <h3>🔍 Filter & Search</h3>
+          <h3> Filter & Search</h3>
           <div className="stack-form">
             <input
               type="text"
@@ -254,7 +254,7 @@ export default function Cases() {
 
       {/* Cases List */}
       <section className="card">
-        <h3>📂 All Cases ({filteredCases.length})</h3>
+        <h3> All Cases ({filteredCases.length})</h3>
         <div className="list-wrap">
           {filteredCases.map((item) => (
             <article key={item._id} className="case-item">
@@ -278,12 +278,12 @@ export default function Cases() {
               </div>
               <p className="case-desc">{item.description || '(No description)'}</p>
               <div className="case-meta">
-                <span>👤 {item.client?.name || 'Unassigned'}</span>
-                {item.nextHearingDate && <span>📅 Hearing: {formatDate(item.nextHearingDate)}</span>}
+                <span> {item.client?.name || 'Unassigned'}</span>
+                {item.nextHearingDate && <span> Hearing: {formatDate(item.nextHearingDate)}</span>}
               </div>
               <div className="action-row">
-                <button className="btn-secondary" onClick={() => onEdit(item)} type="button">✎ Edit</button>
-                <button className="btn-danger" onClick={() => onDelete(item._id)} type="button">🗑️ Delete</button>
+                <button className="btn-secondary" onClick={() => onEdit(item)} type="button"> Edit</button>
+                <button className="btn-danger" onClick={() => onDelete(item._id)} type="button"> Delete</button>
               </div>
             </article>
           ))}

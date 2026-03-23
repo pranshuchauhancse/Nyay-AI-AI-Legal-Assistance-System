@@ -2,8 +2,8 @@ import { useState, useMemo } from 'react';
 
 const RESOURCES_CATEGORIES = {
   llb: {
-    title: '📚 LLB (Undergraduate)',
-    icon: '🎓',
+    title: ' LLB (Undergraduate)',
+    icon: '',
     subjects: [
       {
         name: 'Constitutional Law',
@@ -62,8 +62,8 @@ const RESOURCES_CATEGORIES = {
     ]
   },
   specialization: {
-    title: '🏆 Specialization Areas',
-    icon: '⚖️',
+    title: ' Specialization Areas',
+    icon: '',
     subjects: [
       {
         name: 'Corporate Law',
@@ -122,8 +122,8 @@ const RESOURCES_CATEGORIES = {
     ]
   },
   practice: {
-    title: '⚡ Legal Practice & Skills',
-    icon: '📖',
+    title: ' Legal Practice & Skills',
+    icon: '',
     subjects: [
       {
         name: 'Legal Writing & Drafting',
@@ -205,7 +205,7 @@ export default function Resources() {
     <div className="page-container">
       <section className="page-header card">
         <div>
-          <h2>📚 Legal Education Resources</h2>
+          <h2> Legal Education Resources</h2>
           <p>Comprehensive study materials and learning resources for LLB and legal specialization</p>
         </div>
       </section>
@@ -228,7 +228,7 @@ export default function Resources() {
 
       {/* Search & Filter */}
       <section className="card">
-        <h3>🔍 Find Resources</h3>
+        <h3> Find Resources</h3>
         <input
           type="text"
           value={searchQuery}
@@ -237,7 +237,7 @@ export default function Resources() {
           style={{ width: '100%', padding: '10px 12px', border: '1px solid #c7d7d1', borderRadius: '10px' }}
         />
         <small style={{ color: '#4e6661', marginTop: '6px', display: 'block' }}>
-          📌 {filteredSubjects.length} subject(s) found
+           {filteredSubjects.length} subject(s) found
         </small>
       </section>
 
@@ -309,7 +309,7 @@ export default function Resources() {
 
                 <div>
                   <strong style={{ color: '#1e3833', fontSize: '0.9rem', display: 'block', marginBottom: '6px' }}>
-                    📖 Learning Resources:
+                     Learning Resources:
                   </strong>
                   <ul style={{ margin: '0', paddingLeft: '18px', color: '#39544f', fontSize: '0.9rem' }}>
                     {subject.resources.map((resource, i) => (
@@ -327,10 +327,10 @@ export default function Resources() {
 
       {/* Study Tips */}
       <section className="card">
-        <h3>💡 Study Tips for Law Graduates</h3>
+        <h3> Study Tips for Law Graduates</h3>
         <div className="page-grid two-col">
           <div>
-            <strong style={{ color: '#1e3833' }}>📖 During LLB:</strong>
+            <strong style={{ color: '#1e3833' }}> During LLB:</strong>
             <ul className="plain-list" style={{ fontSize: '0.9rem', marginTop: '8px' }}>
               <li>Master Constitutional & Contract law fundamentals</li>
               <li>Analyze landmark Supreme Court judgments</li>
@@ -341,7 +341,7 @@ export default function Resources() {
           </div>
 
           <div>
-            <strong style={{ color: '#1e3833' }}>🏆 Post-Graduation:</strong>
+            <strong style={{ color: '#1e3833' }}> Post-Graduation:</strong>
             <ul className="plain-list" style={{ fontSize: '0.9rem', marginTop: '8px' }}>
               <li>Choose specialization based on career interest</li>
               <li>Focus on current case laws in your domain</li>
@@ -355,7 +355,7 @@ export default function Resources() {
 
       {/* Important Links */}
       <section className="card">
-        <h3>🔗 Important Official Resources</h3>
+        <h3> Important Official Resources</h3>
         <div className="page-grid two-col">
           {[
             { name: 'Supreme Court of India', url: 'https://www.supremecourtofindia.gov.in' },
@@ -382,7 +382,7 @@ export default function Resources() {
                 hover: { background: '#e9f2ff' }
               }}
             >
-              🌐 {link.name}
+               {link.name}
             </a>
           ))}
         </div>

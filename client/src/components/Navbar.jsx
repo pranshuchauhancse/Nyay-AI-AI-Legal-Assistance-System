@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [now, setNow] = useState(() => new Date());
   const [showAccountMenu, setShowAccountMenu] = useState(false);
 
@@ -13,10 +14,11 @@ export default function Navbar() {
   }, []);
 
   const pages = [
-    { path: '/', label: '📊 Dashboard' },
-    { path: '/cases', label: '📋 Cases' },
-    { path: '/clients', label: '👥 Clients' },
-    { path: '/appointments', label: '📅 Appointments' },
+    { path: '/', label: 'Dashboard' },
+    { path: '/cases', label: 'Cases' },
+    { path: '/clients', label: 'Clients' },
+    { path: '/appointments', label: 'Appointments' },
+    { path: '/resources', label: 'Resources' },
   ];
 
   return (
@@ -58,14 +60,14 @@ export default function Navbar() {
                 className="dropdown-item"
                 onClick={() => setShowAccountMenu(false)}
               >
-                👤 Profile & Account
+                Profile & Account
               </Link>
               <Link
                 to="/settings"
                 className="dropdown-item"
                 onClick={() => setShowAccountMenu(false)}
               >
-                ⚙️ Settings
+                Settings
               </Link>
               <hr />
               <button
@@ -73,10 +75,11 @@ export default function Navbar() {
                 onClick={() => {
                   logout();
                   setShowAccountMenu(false);
+                  navigate('/login');
                 }}
                 type="button"
               >
-                🚪 Logout
+                Logout
               </button>
             </div>
           )}

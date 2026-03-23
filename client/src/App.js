@@ -7,6 +7,7 @@ import Clients from './pages/Clients';
 import Appointments from './pages/Appointments';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Resources from './pages/Resources';
 import Login from './pages/Login';
 import { useAuth } from './hooks/useAuth';
 
@@ -20,6 +21,7 @@ function ProtectedLayout() {
           <Route path="/cases" element={<Cases />} />
           <Route path="/clients" element={<Clients />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/resources" element={<Resources />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/" replace />} />
