@@ -1,6 +1,13 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const APPROVED_ADMIN_EMAILS = [
+  'pranshu121005@gmail.com',
+  'rohitchauhan200207@gmail.com',
+];
+
+const normalizeEmail = (value = '') => String(value).trim().toLowerCase();
+
 const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
@@ -18,6 +25,14 @@ const protect = async (req, res, next) => {
     if (!req.user) {
       res.status(401);
       throw new Error('User not found');
+    }
+
+    if (
+      req.user.role === 'admin' &&
+      !APPROVED_ADMIN_EMAILS.includes(normalizeEmail(req.user.email))
+    ) {
+      res.status(403);
+      throw new Error('Admin access denied for this account');
     }
 
     next();

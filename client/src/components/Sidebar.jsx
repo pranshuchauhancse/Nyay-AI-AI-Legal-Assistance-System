@@ -1,15 +1,11 @@
 import { NavLink } from 'react-router-dom';
-
-const links = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/cases', label: 'Cases' },
-  { to: '/clients', label: 'Clients' },
-  { to: '/appointments', label: 'Appointments' },
-  { to: '/profile', label: 'Profile' },
-  { to: '/settings', label: 'Settings' },
-];
+import { useAuth } from '../hooks/useAuth';
+import { getRoleLinks } from '../utils/helpers';
 
 export default function Sidebar() {
+  const { user } = useAuth();
+  const links = getRoleLinks(user?.role);
+
   return (
     <aside className="sidebar">
       <nav>

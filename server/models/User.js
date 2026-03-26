@@ -22,8 +22,69 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['lawyer', 'client', 'admin'],
-      default: 'lawyer',
+      enum: ['citizen', 'lawyer', 'judge', 'police', 'admin'],
+      default: 'citizen',
+    },
+    profilePic: {
+      type: String,
+      default: null,
+    },
+    // Lawyer specific fields
+    licenseNumber: {
+      type: String,
+      default: null,
+    },
+    specialization: {
+      type: String,
+      default: null,
+    },
+    officeAddress: {
+      type: String,
+      default: null,
+    },
+    // Judge specific fields
+    courtName: {
+      type: String,
+      default: null,
+    },
+    // Police specific fields
+    badgeNumber: {
+      type: String,
+      default: null,
+    },
+    division: {
+      type: String,
+      default: null,
+    },
+    rank: {
+      type: String,
+      default: null,
+    },
+    // Citizen specific fields
+    phone: {
+      type: String,
+      default: null,
+    },
+    address: {
+      type: String,
+      default: null,
+    },
+    city: {
+      type: String,
+      default: null,
+    },
+    // Common fields for multiple roles
+    experience: {
+      type: Number,
+      default: null,
+    },
+    yearsOfService: {
+      type: Number,
+      default: null,
+    },
+    department: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true }

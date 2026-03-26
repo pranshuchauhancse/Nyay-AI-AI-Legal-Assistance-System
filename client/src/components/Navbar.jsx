@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getRoleLinks, ROLE_LABELS } from '../utils/helpers';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -13,13 +14,7 @@ export default function Navbar() {
     return () => clearInterval(timer);
   }, []);
 
-  const pages = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/cases', label: 'Cases' },
-    { path: '/clients', label: 'Clients' },
-    { path: '/appointments', label: 'Appointments' },
-    { path: '/resources', label: 'Resources' },
-  ];
+  const pages = getRoleLinks(user?.role);
 
   return (
     <header className="navbar">
@@ -31,9 +26,14 @@ export default function Navbar() {
 
       <nav className="navbar-links">
         {pages.map((page) => (
-          <Link key={page.path} to={page.path} className="nav-link">
+          <NavLink
+            key={page.to}
+            to={page.to}
+            end={page.to.endsWith('/dashboard')}
+            className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}
+          >
             {page.label}
-          </Link>
+          </NavLink>
         ))}
       </nav>
 
@@ -53,7 +53,7 @@ export default function Navbar() {
             <div className="dropdown-menu">
               <div className="dropdown-header">
                 <div className="user-name">{user?.name}</div>
-                <div className="user-email">{user?.email}</div>
+                <div className="user-email">{user?.email} | {ROLE_LABELS[user?.role] || 'User'}</div>
               </div>
               <hr />
               <Link
