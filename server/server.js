@@ -14,6 +14,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const { requireDatabase } = require('./middleware/dbMiddleware');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 connectDB().then(async (connected) => {
@@ -36,6 +37,9 @@ app.use(morgan('dev'));
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nyay-AI server running' });
 });
+
+// All API endpoints below require MongoDB connection.
+app.use('/api', requireDatabase);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

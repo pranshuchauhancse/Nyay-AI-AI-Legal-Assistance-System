@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 
 const APPROVED_ADMIN_EMAILS = [
@@ -17,6 +18,11 @@ const protect = async (req, res, next) => {
   }
 
   try {
+    if (mongoose.connection.readyState !== 1) {
+      res.status(503);
+      throw new Error('Database not connected');
+    }
+
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 

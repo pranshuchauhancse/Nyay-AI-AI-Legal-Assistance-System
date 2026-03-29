@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  // Avoid requests hanging forever when Mongo is unavailable.
+  mongoose.set('bufferCommands', false);
+  mongoose.set('bufferTimeoutMS', 0);
+
   if (!process.env.MONGO_URI) {
     console.warn('MongoDB URI not set. Starting server without database connection.');
     return false;
