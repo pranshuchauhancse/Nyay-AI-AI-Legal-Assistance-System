@@ -92,24 +92,24 @@ const updateMyProfile = async (req, res) => {
     throw new Error('User not found');
   }
 
-  user.name = req.body.name || user.name;
-  user.email = req.body.email || user.email;
-  user.profilePic = req.body.profilePic || user.profilePic;
+  if ('name' in req.body) user.name = req.body.name;
+  if ('email' in req.body) user.email = req.body.email;
+  if ('profilePic' in req.body) user.profilePic = req.body.profilePic;
 
-  // Handle role-specific fields
-  if (req.body.licenseNumber) user.licenseNumber = req.body.licenseNumber;
-  if (req.body.specialization) user.specialization = req.body.specialization;
-  if (req.body.officeAddress) user.officeAddress = req.body.officeAddress;
-  if (req.body.courtName) user.courtName = req.body.courtName;
-  if (req.body.badgeNumber) user.badgeNumber = req.body.badgeNumber;
-  if (req.body.division) user.division = req.body.division;
-  if (req.body.rank) user.rank = req.body.rank;
-  if (req.body.phone) user.phone = req.body.phone;
-  if (req.body.address) user.address = req.body.address;
-  if (req.body.city) user.city = req.body.city;
-  if (req.body.experience) user.experience = req.body.experience;
-  if (req.body.yearsOfService) user.yearsOfService = req.body.yearsOfService;
-  if (req.body.department) user.department = req.body.department;
+  // Handle role-specific fields (allow clearing)
+  if ('licenseNumber' in req.body) user.licenseNumber = req.body.licenseNumber;
+  if ('specialization' in req.body) user.specialization = req.body.specialization;
+  if ('officeAddress' in req.body) user.officeAddress = req.body.officeAddress;
+  if ('courtName' in req.body) user.courtName = req.body.courtName;
+  if ('badgeNumber' in req.body) user.badgeNumber = req.body.badgeNumber;
+  if ('division' in req.body) user.division = req.body.division;
+  if ('rank' in req.body) user.rank = req.body.rank;
+  if ('phone' in req.body) user.phone = req.body.phone;
+  if ('address' in req.body) user.address = req.body.address;
+  if ('city' in req.body) user.city = req.body.city;
+  if ('experience' in req.body) user.experience = req.body.experience;
+  if ('yearsOfService' in req.body) user.yearsOfService = req.body.yearsOfService;
+  if ('department' in req.body) user.department = req.body.department;
 
   if (req.body.password) {
     user.password = req.body.password;

@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageTemplate from '../PageTemplate';
+import { useAuth } from '../../hooks/useAuth';
+import { ROLE_LABELS } from '../../utils/helpers';
 
 const SETTINGS_KEY = 'nyay_settings_v1';
 
@@ -14,6 +16,14 @@ const DEFAULT_SETTINGS = {
   timezone: 'Asia/Kolkata',
   sessionTimeoutMins: 30,
   publicProfile: false,
+
+  // Role-specific (stored locally)
+  lawyerDefaultMeetingMins: 30,
+  lawyerShowClientContact: true,
+  judgeAutoRefreshSchedule: true,
+  policeDefaultReportType: 'Investigation',
+  adminShowSystemAlerts: true,
+  citizenHearingReminders: true,
 };
 
 const safeParseJson = (value) => {
@@ -54,6 +64,8 @@ function ToggleRow({ id, label, description, checked, onChange }) {
 }
 
 export default function SettingsPage() {
+  const { user } = useAuth();
+  const role = user?.role || 'citizen';
   const [active, setActive] = useState('general');
   const [settings, setSettings] = useState(() => DEFAULT_SETTINGS);
   const [message, setMessage] = useState('');
@@ -62,15 +74,24 @@ export default function SettingsPage() {
     setSettings(loadSettings());
   }, []);
 
-  const nav = useMemo(
-    () => [
+  const roleTab = useMemo(() => {
+    if (role === 'lawyer') return { id: 'practice', label: 'Practice' };
+    if (role === 'judge') return { id: 'court', label: 'Court' };
+    if (role === 'police') return { id: 'investigation', label: 'Investigation' };
+    if (role === 'admin') return { id: 'governance', label: 'Governance' };
+    return { id: 'citizen', label: 'Case Tracking' };
+  }, [role]);
+
+  const nav = useMemo(() => {
+    return [
       { id: 'general', label: 'General' },
       { id: 'notifications', label: 'Notifications' },
+      { id: roleTab.id, label: roleTab.label },
       { id: 'privacy', label: 'Privacy' },
       { id: 'display', label: 'Display' },
-    ],
-    []
-  );
+      { id: 'data', label: 'Data' },
+    ];
+  }, [roleTab.id, roleTab.label]);
 
   const onSave = (event) => {
     event.preventDefault();
@@ -80,6 +101,16 @@ export default function SettingsPage() {
   };
 
   const set = (key) => (value) => setSettings((prev) => ({ ...prev, [key]: value }));
+
+  const roleLabel = ROLE_LABELS[role] || 'User';
+
+  const onReset = () => {
+    const next = { ...DEFAULT_SETTINGS };
+    setSettings(next);
+    saveSettings(next);
+    setMessage('Settings reset to defaults.');
+    setTimeout(() => setMessage(''), 2000);
+  };
 
   return (
     <PageTemplate title="Settings" description="LeetCode-style preferences: quick, clean, and organized.">
@@ -116,6 +147,44 @@ export default function SettingsPage() {
               <Link to="/settings" className="lc-tab active" role="tab" aria-selected="true">
                 Settings
               </Link>
+            </div>
+          </section>
+
+          <section className="lc-card">
+            <div className="lc-card-head">
+              <div>
+                <h3>Signed in</h3>
+                <p>Your role controls what you see across Nyay-AI.</p>
+              </div>
+            </div>
+            <div className="lc-activity-grid">
+              <div className="lc-activity-col">
+                <div className="lc-activity-title">Account</div>
+                <div className="lc-list">
+                  <div className="lc-list-item">
+                    <div className="lc-list-main">
+                      <strong>{user?.name || 'User'}</strong>
+                      <small>{user?.email || ''}</small>
+                    </div>
+                    <div className="lc-list-meta">
+                      <span className="lc-tag">{roleLabel}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="lc-activity-col">
+                <div className="lc-activity-title">Quick links</div>
+                <div className="lc-link-grid">
+                  <Link to="/chatbot" className="lc-link-card">
+                    <span>Chatbot</span>
+                    <small>/chatbot</small>
+                  </Link>
+                  <Link to="/profile" className="lc-link-card">
+                    <span>Profile</span>
+                    <small>/profile</small>
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
 
@@ -233,6 +302,100 @@ export default function SettingsPage() {
             </section>
           ) : null}
 
+          {active === roleTab.id ? (
+            <section className="lc-card">
+              <div className="lc-card-head">
+                <div>
+                  <h3>{roleTab.label}</h3>
+                  <p>Role-specific preferences for your workflows.</p>
+                </div>
+              </div>
+
+              {role === 'lawyer' ? (
+                <>
+                  <ToggleRow
+                    id="lawyerShowClientContact"
+                    label="Show client contact info"
+                    description="Display client email/phone prominently in lists."
+                    checked={settings.lawyerShowClientContact}
+                    onChange={set('lawyerShowClientContact')}
+                  />
+
+                  <div className="lc-setting-row">
+                    <div className="lc-setting-info">
+                      <label className="lc-setting-label" htmlFor="lawyerDefaultMeetingMins">
+                        Default meeting length
+                      </label>
+                      <p className="lc-setting-desc">Used as a suggested duration for meetings.</p>
+                    </div>
+                    <div className="setting-input-group">
+                      <input
+                        id="lawyerDefaultMeetingMins"
+                        className="setting-input"
+                        type="number"
+                        min={10}
+                        max={180}
+                        value={settings.lawyerDefaultMeetingMins}
+                        onChange={(e) => set('lawyerDefaultMeetingMins')(Number(e.target.value || 0))}
+                      />
+                      <span className="input-unit">mins</span>
+                    </div>
+                  </div>
+                </>
+              ) : null}
+
+              {role === 'judge' ? (
+                <ToggleRow
+                  id="judgeAutoRefreshSchedule"
+                  label="Auto refresh hearing schedule"
+                  description="Keep the hearing schedule up to date while the page is open."
+                  checked={settings.judgeAutoRefreshSchedule}
+                  onChange={set('judgeAutoRefreshSchedule')}
+                />
+              ) : null}
+
+              {role === 'police' ? (
+                <div className="lc-setting-row">
+                  <div className="lc-setting-info">
+                    <label className="lc-setting-label" htmlFor="policeDefaultReportType">
+                      Default report type
+                    </label>
+                    <p className="lc-setting-desc">Preselect a report type when uploading reports.</p>
+                  </div>
+                  <select
+                    id="policeDefaultReportType"
+                    className="setting-select"
+                    value={settings.policeDefaultReportType}
+                    onChange={(e) => set('policeDefaultReportType')(e.target.value)}
+                  >
+                    <option value="FIR">FIR</option>
+                    <option value="Investigation">Investigation</option>
+                  </select>
+                </div>
+              ) : null}
+
+              {role === 'admin' ? (
+                <ToggleRow
+                  id="adminShowSystemAlerts"
+                  label="Show system alerts"
+                  description="Display important admin alerts on dashboards."
+                  checked={settings.adminShowSystemAlerts}
+                  onChange={set('adminShowSystemAlerts')}
+                />
+              ) : null}
+
+              {role === 'citizen' ? (
+                <ToggleRow
+                  id="citizenHearingReminders"
+                  label="Hearing reminders"
+                  description="Highlight upcoming hearing dates and reminders."
+                  checked={settings.citizenHearingReminders}
+                  onChange={set('citizenHearingReminders')}
+                />
+              ) : null}
+            </section>
+          ) : null}
+
           {active === 'privacy' ? (
             <section className="lc-card">
               <div className="lc-card-head">
@@ -268,6 +431,27 @@ export default function SettingsPage() {
                 checked={settings.compactLayout}
                 onChange={set('compactLayout')}
               />
+            </section>
+          ) : null}
+
+          {active === 'data' ? (
+            <section className="lc-card">
+              <div className="lc-card-head">
+                <div>
+                  <h3>Data</h3>
+                  <p>Control local settings stored in this browser.</p>
+                </div>
+              </div>
+
+              <div className="lc-setting-row">
+                <div className="lc-setting-info">
+                  <div className="lc-setting-label">Reset preferences</div>
+                  <p className="lc-setting-desc">Restore defaults for all settings.</p>
+                </div>
+                <button className="lc-btn-ghost" type="button" onClick={onReset}>
+                  Reset
+                </button>
+              </div>
             </section>
           ) : null}
 

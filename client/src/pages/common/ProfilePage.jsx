@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PageTemplate from '../PageTemplate';
 import { useAuth } from '../../hooks/useAuth';
 import { getProfile, updateProfile } from '../../services/authService';
+import api from '../../services/api';
 import { ROLE_LABELS } from '../../utils/helpers';
 
 const ROLE_SPECIFIC_FIELDS = {
@@ -53,6 +54,15 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState('');
   const [roleFields, setRoleFields] = useState({});
 
+  const [activityLoading, setActivityLoading] = useState(false);
+  const [activityError, setActivityError] = useState('');
+  const [activity, setActivity] = useState({
+    cases: [],
+    appointments: [],
+    reports: [],
+    clients: [],
+  });
+
   useEffect(() => {
     let alive = true;
 
@@ -91,51 +101,203 @@ export default function ProfilePage() {
     };
   }, [role, user?.email, user?.name]);
 
-  const stats = useMemo(() => {
-    const base = [
-      { label: 'Open Cases', value: 0 },
-      { label: 'Appointments', value: 0 },
-      { label: 'Documents', value: 0 },
-      { label: 'Streak', value: '—' },
-    ];
+  useEffect(() => {
+    let alive = true;
 
+    const loadActivity = async () => {
+      setActivityLoading(true);
+      setActivityError('');
+
+      const wantsAppointments = role === 'citizen' || role === 'lawyer';
+      const wantsReports = role === 'police' || role === 'admin' || role === 'judge';
+      const wantsClients = role === 'lawyer';
+
+      try {
+        const [casesRes, appointmentsRes, reportsRes, clientsRes] = await Promise.all([
+          api.get('/cases'),
+          wantsAppointments ? api.get('/appointments') : Promise.resolve({ data: [] }),
+          wantsReports ? api.get('/reports') : Promise.resolve({ data: [] }),
+          wantsClients ? api.get('/clients') : Promise.resolve({ data: [] }),
+        ]);
+
+        if (!alive) return;
+        setActivity({
+          cases: casesRes.data || [],
+          appointments: appointmentsRes.data || [],
+          reports: reportsRes.data || [],
+          clients: clientsRes.data || [],
+        });
+      } catch {
+        if (!alive) return;
+        setActivityError('Could not load activity right now.');
+      } finally {
+        if (!alive) return;
+        setActivityLoading(false);
+      }
+    };
+
+    loadActivity();
+    return () => {
+      alive = false;
+    };
+  }, [role]);
+
+  const caseCounts = useMemo(() => {
+    const total = activity.cases.length;
+    const open = activity.cases.filter(
+      (item) => item?.status && !['Resolved', 'Closed'].includes(String(item.status))
+    ).length;
+    const highPriority = activity.cases.filter((item) => item?.priority === 'High').length;
+    return { total, open, highPriority };
+  }, [activity.cases]);
+
+  const appointmentCounts = useMemo(() => {
+    const total = activity.appointments.length;
+    const now = Date.now();
+    const upcoming = activity.appointments.filter((item) => {
+      const time = item?.appointmentDate ? new Date(item.appointmentDate).getTime() : 0;
+      return time >= now && item?.status !== 'Cancelled';
+    }).length;
+    return { total, upcoming };
+  }, [activity.appointments]);
+
+  const reportCounts = useMemo(() => {
+    const total = activity.reports.length;
+    const submitted = activity.reports.filter((item) => item?.status === 'Submitted').length;
+    return { total, submitted };
+  }, [activity.reports]);
+
+  const clientCounts = useMemo(() => {
+    const total = activity.clients.length;
+    const withPhone = activity.clients.filter((item) => Boolean(item?.phone)).length;
+    return { total, withPhone };
+  }, [activity.clients]);
+
+  const stats = useMemo(() => {
     if (role === 'lawyer') {
       return [
-        { label: 'Assigned Cases', value: 0 },
-        { label: 'Clients', value: 0 },
-        { label: 'Meetings', value: 0 },
-        { label: 'Win Rate', value: '—' },
+        { label: 'Open Cases', value: caseCounts.open },
+        { label: 'Clients', value: clientCounts.total },
+        { label: 'Upcoming', value: appointmentCounts.upcoming },
+        { label: 'High Priority', value: caseCounts.highPriority },
       ];
     }
 
     if (role === 'judge') {
+      const upcomingHearings = activity.cases.filter((item) => {
+        const time = item?.nextHearingDate ? new Date(item.nextHearingDate).getTime() : 0;
+        return time >= Date.now();
+      }).length;
+      const inHearing = activity.cases.filter((item) => item?.status === 'In Hearing').length;
       return [
-        { label: 'Active Hearings', value: 0 },
-        { label: 'Pending Judgments', value: 0 },
-        { label: 'Court Days', value: '—' },
-        { label: 'Streak', value: '—' },
+        { label: 'Cases', value: caseCounts.total },
+        { label: 'In Hearing', value: inHearing },
+        { label: 'Upcoming Hearings', value: upcomingHearings },
+        { label: 'High Priority', value: caseCounts.highPriority },
       ];
     }
 
     if (role === 'police') {
+      const firs = activity.reports.filter((item) => item?.type === 'FIR').length;
+      const investigations = activity.reports.filter((item) => item?.type === 'Investigation').length;
       return [
-        { label: 'FIRs', value: 0 },
-        { label: 'Investigations', value: 0 },
-        { label: 'Reports', value: 0 },
-        { label: 'Resolution', value: '—' },
+        { label: 'Open Cases', value: caseCounts.open },
+        { label: 'FIRs', value: firs },
+        { label: 'Investigations', value: investigations },
+        { label: 'Submitted', value: reportCounts.submitted },
       ];
     }
 
     if (role === 'admin') {
       return [
-        { label: 'Users', value: 0 },
-        { label: 'Cases', value: 0 },
-        { label: 'Reports', value: 0 },
-        { label: 'Health', value: '—' },
+        { label: 'Cases', value: caseCounts.total },
+        { label: 'Open Cases', value: caseCounts.open },
+        { label: 'Reports', value: reportCounts.total },
+        { label: 'High Priority', value: caseCounts.highPriority },
       ];
     }
 
-    return base;
+    return [
+      { label: 'Open Cases', value: caseCounts.open },
+      { label: 'All Cases', value: caseCounts.total },
+      { label: 'Upcoming', value: appointmentCounts.upcoming },
+      { label: 'Reports', value: reportCounts.total },
+    ];
+  }, [
+    activity.cases,
+    activity.reports,
+    appointmentCounts.upcoming,
+    caseCounts.highPriority,
+    caseCounts.open,
+    caseCounts.total,
+    clientCounts.total,
+    reportCounts.submitted,
+    reportCounts.total,
+    role,
+  ]);
+
+  const roleActions = useMemo(() => {
+    if (role === 'lawyer') {
+      return [
+        { label: 'Assigned Cases', to: '/lawyer/assigned-cases' },
+        { label: 'Client List', to: '/lawyer/client-list' },
+        { label: 'Schedule Meeting', to: '/lawyer/schedule-meeting' },
+        { label: 'Dashboard', to: '/lawyer/dashboard' },
+      ];
+    }
+
+    if (role === 'judge') {
+      return [
+        { label: 'Case List', to: '/judge/case-list' },
+        { label: 'Hearing Schedule', to: '/judge/hearing-schedule' },
+        { label: 'Update Judgment', to: '/judge/update-judgment' },
+        { label: 'Dashboard', to: '/judge/dashboard' },
+      ];
+    }
+
+    if (role === 'police') {
+      return [
+        { label: 'FIR Complaints', to: '/police/fir-complaints' },
+        { label: 'Investigation Status', to: '/police/investigation-status' },
+        { label: 'Upload Reports', to: '/police/upload-reports' },
+        { label: 'Dashboard', to: '/police/dashboard' },
+      ];
+    }
+
+    if (role === 'admin') {
+      return [
+        { label: 'Manage Users', to: '/admin/manage-users' },
+        { label: 'All Cases', to: '/admin/all-cases' },
+        { label: 'Reports', to: '/admin/reports' },
+        { label: 'Dashboard', to: '/admin/dashboard' },
+      ];
+    }
+
+    return [
+      { label: 'My Cases', to: '/citizen/my-cases' },
+      { label: 'Case Status', to: '/citizen/case-status' },
+      { label: 'Book Appointment', to: '/citizen/book-appointment' },
+      { label: 'Dashboard', to: '/citizen/dashboard' },
+    ];
+  }, [role]);
+
+  const formatWhen = (value) => {
+    if (!value) return '';
+    const time = new Date(value);
+    if (Number.isNaN(time.getTime())) return '';
+    return time.toLocaleString('en-IN');
+  };
+
+  const activitySections = useMemo(() => {
+    const sections = [
+      { id: 'cases', title: 'Cases' },
+    ];
+
+    if (role === 'citizen' || role === 'lawyer') sections.push({ id: 'appointments', title: 'Appointments' });
+    if (role === 'police' || role === 'admin' || role === 'judge') sections.push({ id: 'reports', title: 'Reports' });
+    if (role === 'lawyer') sections.push({ id: 'clients', title: 'Clients' });
+
+    return sections;
   }, [role]);
 
   const onAvatarChange = (event) => {
@@ -233,9 +395,22 @@ export default function ProfilePage() {
             <div className="lc-stat-grid" aria-label="Quick stats">
               {stats.map((item) => (
                 <div key={item.label} className="lc-stat">
-                  <strong>{item.value}</strong>
+                  <strong>{activityLoading ? '—' : item.value}</strong>
                   <span>{item.label}</span>
                 </div>
+              ))}
+            </div>
+            {activityError ? <div className="lc-alert error" role="status">{activityError}</div> : null}
+          </section>
+
+          <section className="lc-card">
+            <div className="lc-card-title">{roleLabel} shortcuts</div>
+            <div className="lc-link-grid" aria-label="Role shortcuts">
+              {roleActions.map((action) => (
+                <Link key={action.to} to={action.to} className="lc-link-card">
+                  <span>{action.label}</span>
+                  <small>{action.to}</small>
+                </Link>
               ))}
             </div>
           </section>
@@ -365,6 +540,118 @@ export default function ProfilePage() {
                 ) : null}
               </div>
             </form>
+          </section>
+
+          <section className="lc-card">
+            <div className="lc-card-head">
+              <div>
+                <h3>Recent activity</h3>
+                <p>Latest items visible to your role.</p>
+              </div>
+              <div className="lc-card-head-right">
+                {activityLoading ? <span className="lc-skeleton-pill">Loading…</span> : null}
+              </div>
+            </div>
+
+            <div className="lc-activity-grid">
+              {activitySections.map((section) => {
+                if (section.id === 'cases') {
+                  return (
+                    <div key={section.id} className="lc-activity-col">
+                      <div className="lc-activity-title">{section.title}</div>
+                      <div className="lc-list">
+                        {(activity.cases || []).slice(0, 5).map((item) => (
+                          <div key={item._id} className="lc-list-item">
+                            <div className="lc-list-main">
+                              <strong>{item.title || 'Untitled case'}</strong>
+                              <small>{item.caseType || 'Case'}</small>
+                            </div>
+                            <div className="lc-list-meta">
+                              <span className="lc-tag">{item.status || 'Filed'}</span>
+                              <small>{formatWhen(item.updatedAt || item.createdAt)}</small>
+                            </div>
+                          </div>
+                        ))}
+                        {!activityLoading && !(activity.cases || []).length ? (
+                          <div className="lc-empty">No cases yet.</div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (section.id === 'appointments') {
+                  return (
+                    <div key={section.id} className="lc-activity-col">
+                      <div className="lc-activity-title">{section.title}</div>
+                      <div className="lc-list">
+                        {(activity.appointments || []).slice(0, 5).map((item) => (
+                          <div key={item._id} className="lc-list-item">
+                            <div className="lc-list-main">
+                              <strong>{item.title || 'Appointment'}</strong>
+                              <small>{formatWhen(item.appointmentDate)}</small>
+                            </div>
+                            <div className="lc-list-meta">
+                              <span className="lc-tag">{item.status || 'Pending'}</span>
+                            </div>
+                          </div>
+                        ))}
+                        {!activityLoading && !(activity.appointments || []).length ? (
+                          <div className="lc-empty">No appointments yet.</div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                }
+
+                if (section.id === 'reports') {
+                  return (
+                    <div key={section.id} className="lc-activity-col">
+                      <div className="lc-activity-title">{section.title}</div>
+                      <div className="lc-list">
+                        {(activity.reports || []).slice(0, 5).map((item) => (
+                          <div key={item._id} className="lc-list-item">
+                            <div className="lc-list-main">
+                              <strong>{item.title || 'Report'}</strong>
+                              <small>{item.type || 'Report'}</small>
+                            </div>
+                            <div className="lc-list-meta">
+                              <span className="lc-tag">{item.status || 'Draft'}</span>
+                              <small>{formatWhen(item.updatedAt || item.createdAt)}</small>
+                            </div>
+                          </div>
+                        ))}
+                        {!activityLoading && !(activity.reports || []).length ? (
+                          <div className="lc-empty">No reports yet.</div>
+                        ) : null}
+                      </div>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div key={section.id} className="lc-activity-col">
+                    <div className="lc-activity-title">{section.title}</div>
+                    <div className="lc-list">
+                      {(activity.clients || []).slice(0, 5).map((item) => (
+                        <div key={item._id} className="lc-list-item">
+                          <div className="lc-list-main">
+                            <strong>{item.name || 'Client'}</strong>
+                            <small>{item.email || item.phone || 'No contact info'}</small>
+                          </div>
+                          <div className="lc-list-meta">
+                            <small>{formatWhen(item.updatedAt || item.createdAt)}</small>
+                          </div>
+                        </div>
+                      ))}
+                      {!activityLoading && !(activity.clients || []).length ? (
+                        <div className="lc-empty">No clients yet.</div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </section>
 
           <section className="lc-card">
