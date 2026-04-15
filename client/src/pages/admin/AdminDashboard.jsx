@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageTemplate from '../PageTemplate';
 import { getUsers } from '../../services/userService';
+import { getCases } from '../../services/caseService';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -19,7 +20,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const loadStats = async () => {
       try {
-        const users = await getUsers();
+        const [users, cases] = await Promise.all([getUsers(), getCases()]);
         
         // Calculate role distribution
         const roleCount = {
@@ -59,11 +60,20 @@ export default function AdminDashboard() {
           });
         }
 
-        // Case statistics (safe defaults until API wiring)
+        const caseList = cases || [];
         const caseStats = [
-          { name: 'Open', value: 0 },
-          { name: 'In Progress', value: 0 },
-          { name: 'Closed', value: 0 }
+          {
+            name: 'Open',
+            value: caseList.filter((item) => ['Filed', 'Under Investigation'].includes(item.status)).length,
+          },
+          {
+            name: 'In Progress',
+            value: caseList.filter((item) => item.status === 'In Hearing').length,
+          },
+          {
+            name: 'Closed',
+            value: caseList.filter((item) => ['Resolved', 'Closed'].includes(item.status)).length,
+          },
         ];
 
         setStats({

@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { getRoleHome } from '../utils/helpers';
 
 export default function ProtectedRoute({ allowedRoles, children }) {
   const { isAuthenticated, user } = useAuth();
@@ -9,7 +10,7 @@ export default function ProtectedRoute({ allowedRoles, children }) {
   }
 
   if (allowedRoles && allowedRoles.length && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={getRoleHome(user?.role)} replace />;
   }
 
   return children;

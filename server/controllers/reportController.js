@@ -67,9 +67,13 @@ const deleteReport = async (req, res) => {
     throw new Error('Report not found');
   }
 
-  if (req.user.role !== 'admin') {
+  const canDelete =
+    req.user.role === 'admin' ||
+    String(report.createdBy) === String(req.user._id);
+
+  if (!canDelete) {
     res.status(403);
-    throw new Error('Forbidden: only admin can delete reports');
+    throw new Error('Forbidden: cannot delete this report');
   }
 
   await report.deleteOne();

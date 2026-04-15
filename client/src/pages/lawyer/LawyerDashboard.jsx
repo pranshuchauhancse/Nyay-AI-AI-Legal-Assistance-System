@@ -1,18 +1,50 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PageTemplate from '../PageTemplate';
-import { useState } from 'react';
+import { getCases } from '../../services/caseService';
+import api from '../../services/api';
 
 export default function LawyerDashboard() {
-  const [stats] = useState({
+  const [stats, setStats] = useState({
     activeCases: 0,
     clients: 0,
-    pendingMeetings: 0
+    pendingMeetings: 0,
   });
+  const [recentCases, setRecentCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      try {
+        const [cases, clientsResponse, meetingsResponse] = await Promise.all([
+          getCases(),
+          api.get('/clients'),
+          api.get('/appointments'),
+        ]);
+
+        const caseList = cases || [];
+        const clientList = clientsResponse.data || [];
+        const meetingList = meetingsResponse.data || [];
+
+        setStats({
+          activeCases: caseList.filter((item) => !['Resolved', 'Closed'].includes(item.status)).length,
+          clients: clientList.length,
+          pendingMeetings: meetingList.filter((item) => item.status === 'Pending').length,
+        });
+        setRecentCases(caseList.slice(0, 4));
+      } catch {
+        setStats({ activeCases: 0, clients: 0, pendingMeetings: 0 });
+        setRecentCases([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboard();
+  }, []);
 
   return (
     <PageTemplate title="Lawyer Dashboard" description="Manage assigned cases and client workflows.">
-      
-      {/* Quick Stats */}
       <section className="stats-row">
         <div className="card stat-card">
           <h3>Active Cases</h3>
@@ -28,7 +60,6 @@ export default function LawyerDashboard() {
         </div>
       </section>
 
-      {/* Quick Actions */}
       <section className="card">
         <h3 style={{ margin: '0 0 14px', fontWeight: 800 }}>Quick Actions</h3>
         <div className="action-row">
@@ -39,37 +70,21 @@ export default function LawyerDashboard() {
         </div>
       </section>
 
-      {/* Case Overview */}
       <section className="card">
-        <h3 style={{ margin: '0 0 14px', fontWeight: 800 }}>Case Overview</h3>
-        <div style={{ display: 'grid', gap: '8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--role-border)' }}>
-            <div>
-              <strong>Case #2024-A01</strong> - Client: Rajesh Kumar
-            </div>
-            <span style={{ background: 'var(--role-accent-light)', color: 'var(--role-accent-text)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 700 }}>
-              In Progress
-            </span>
+        <h3 style={{ margin: '0 0 14px', fontWeight: 800 }}>Recent Assigned Cases</h3>
+        {loading && <p>Loading dashboard...</p>}
+        {!loading && (
+          <div className="list-wrap" style={{ gap: '8px' }}>
+            {recentCases.map((item) => (
+              <div className="list-item" key={item._id}>
+                <h4 style={{ margin: 0 }}>{item.title}</h4>
+                <p style={{ margin: '4px 0 0' }}>Status: {item.status}</p>
+              </div>
+            ))}
+            {!recentCases.length && <p>No assigned cases found yet.</p>}
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--role-border)' }}>
-            <div>
-              <strong>Case #2024-A02</strong> - Client: Priya Singh
-            </div>
-            <span style={{ background: 'var(--role-accent-light)', color: 'var(--role-accent-text)', padding: '4px 8px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 700 }}>
-              Awaiting Hearing
-            </span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-            <div>
-              <strong>Case #2024-A03</strong> - Client: Arjun Patel
-            </div>
-            <span style={{ background: '#e0f2fe', color: '#0c2d6b', padding: '4px 8px', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 700 }}>
-              Documentation
-            </span>
-          </div>
-        </div>
+        )}
       </section>
-
     </PageTemplate>
   );
 }
