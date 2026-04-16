@@ -54,29 +54,6 @@ export default function ManageUsersPage() {
     }
   };
 
-  const onAddDefaultAdmins = async () => {
-    if (!isSuperAdmin) {
-      setMessage('Only super admins can add admin accounts.');
-      return;
-    }
-
-    const defaults = [
-      { name: 'Pranshu Chauhan', email: 'pranshu121005@gmail.com', password: 'pranshu@2005', role: 'admin' },
-      { name: 'Rohit Chauhan', email: 'rohitchauhan200207@gmail.com', password: 'rohit@2018', role: 'admin' },
-    ];
-
-    for (const admin of defaults) {
-      try {
-        await createUser(admin);
-      } catch {
-        // Ignore if already exists and continue processing both default admins.
-      }
-    }
-
-    setMessage('Default admin profiles synced.');
-    loadUsers();
-  };
-
   const onViewActivity = async (userId) => {
     setLoadingActivity(true);
     try {
@@ -95,11 +72,6 @@ export default function ManageUsersPage() {
       <section className="page-grid two-col">
         <article className="card">
           <h3>Add User</h3>
-          {isSuperAdmin && (
-            <div className="action-row" style={{ marginBottom: '10px' }}>
-              <button className="btn-secondary" type="button" onClick={onAddDefaultAdmins}>Add 2 Admin</button>
-            </div>
-          )}
           <form className="stack-form" onSubmit={onCreate}>
             <input
               value={form.name}

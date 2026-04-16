@@ -46,7 +46,7 @@ export default function Navbar() {
             onClick={() => setShowAccountMenu(!showAccountMenu)}
             type="button"
           >
-            {user?.name || 'Guest'} ▼
+            {user?.name || 'Guest'} v
           </button>
 
           {showAccountMenu && (
@@ -89,3 +89,4 @@ export default function Navbar() {
     </header>
   );
 }
+

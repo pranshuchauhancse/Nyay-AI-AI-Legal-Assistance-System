@@ -43,8 +43,10 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (err) {
-    res.status(401);
-    throw new Error('Not authorized, token invalid');
+    if (res.statusCode < 400) {
+      res.status(401);
+    }
+    throw new Error(err.message || 'Not authorized, token invalid');
   }
 };
 

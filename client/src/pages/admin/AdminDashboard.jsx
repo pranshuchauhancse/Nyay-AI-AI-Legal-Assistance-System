@@ -49,14 +49,21 @@ export default function AdminDashboard() {
           }[name]
         }));
 
-        // Keep trend deterministic (no fake/random spikes)
         const trend = [];
         for (let i = 6; i >= 0; i--) {
           const date = new Date();
+          date.setHours(0, 0, 0, 0);
           date.setDate(date.getDate() - i);
+          const nextDate = new Date(date);
+          nextDate.setDate(date.getDate() + 1);
+          const count = users.filter((item) => {
+            const createdAt = item?.createdAt ? new Date(item.createdAt) : null;
+            return createdAt && createdAt >= date && createdAt < nextDate;
+          }).length;
+
           trend.push({
             date: date.toLocaleDateString('en-US', { weekday: 'short' }),
-            users: 0
+            users: count,
           });
         }
 
@@ -81,7 +88,9 @@ export default function AdminDashboard() {
           roleDistribution: roleData,
           userTrend: trend,
           caseStats,
-          activityRate: 0
+          activityRate: users.length
+            ? Math.round((caseList.length / users.length) * 100)
+            : 0
         });
       } catch (error) {
         console.error('Failed to load stats:', error);
