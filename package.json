@@ -4,9 +4,11 @@
   "private": true,
   "description": "Nyay-AI full-stack legal assistance platform",
   "scripts": {
-    "dev": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\"",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "install:all": "npm install && npm install --prefix server && npm install --prefix client",
     "server": "npm run dev --prefix server",
-    "client": "npm start --prefix client"
+    "client": "npm run dev --prefix client",
+    "start": "npm run dev"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
