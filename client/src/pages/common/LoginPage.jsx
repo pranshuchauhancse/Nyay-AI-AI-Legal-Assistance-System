@@ -26,7 +26,11 @@ export default function LoginPage() {
       login(data);
       navigate(getRoleHome(data.role), { replace: true });
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      if (err.response?.status === 503) {
+        setError('Database is not connected. Start MongoDB, then restart the backend.');
+      } else {
+        setError(err.response?.data?.message || 'Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

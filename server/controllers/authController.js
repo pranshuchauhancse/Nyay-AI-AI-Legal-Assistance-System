@@ -12,6 +12,10 @@ const normalizeEmail = (value = '') => String(value).trim().toLowerCase();
 const isApprovedAdmin = (email = '') => APPROVED_ADMIN_EMAILS.includes(normalizeEmail(email));
 
 const generateToken = (id) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET is missing. Add JWT_SECRET in server/.env and restart the server.');
+  }
+
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
@@ -33,13 +37,15 @@ const registerUser = async (req, res) => {
     throw new Error('Admin registration is disabled from public signup');
   }
 
-  const exists = await User.findOne({ email });
+  const normalizedEmail = normalizeEmail(email);
+
+  const exists = await User.findOne({ email: normalizedEmail });
   if (exists) {
     res.status(400);
     throw new Error('User already exists');
   }
 
-  const user = await User.create({ name, email, password, role });
+  const user = await User.create({ name, email: normalizedEmail, password, role });
 
   res.status(201).json({
     _id: user._id,
@@ -53,7 +59,12 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password, role } = req.body;
 
-  const user = await User.findOne({ email });
+  if (!email || !password) {
+    res.status(400);
+    throw new Error('Email and password are required');
+  }
+
+  const user = await User.findOne({ email: normalizeEmail(email) });
 
   if (!user || !(await user.matchPassword(password))) {
     res.status(401);
