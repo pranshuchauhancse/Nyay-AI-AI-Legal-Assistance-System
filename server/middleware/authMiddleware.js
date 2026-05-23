@@ -26,6 +26,12 @@ const protect = async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Ensure it's an access token
+    if (decoded.type !== 'access') {
+      res.status(401);
+      throw new Error('Invalid token type. Use access token.');
+    }
+
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
@@ -33,6 +39,7 @@ const protect = async (req, res, next) => {
       throw new Error('User not found');
     }
 
+    // Verify admin access if admin role
     if (
       req.user.role === 'admin' &&
       !APPROVED_ADMIN_EMAILS.includes(normalizeEmail(req.user.email))
