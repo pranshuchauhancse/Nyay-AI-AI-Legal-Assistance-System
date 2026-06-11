@@ -1,5 +1,22 @@
 import api from './api';
 
+const normalizeAuthPayload = (payload) => {
+  const source = payload?.data || payload;
+  const user = source?.user;
+  const accessToken = source?.accessToken || source?.token || source?.tokens?.accessToken;
+
+  return {
+    success: Boolean(payload?.success ?? source?.success ?? true),
+    user,
+    role: user?.role,
+    token: accessToken,
+    accessToken,
+    sessionId: source?.sessionId,
+    expiresIn: source?.tokens?.expiresIn || source?.expiresIn,
+    tokenType: source?.tokens?.tokenType || source?.tokenType || 'Bearer',
+  };
+};
+
 /**
  * PHASE 1: Updated to handle dual-token system
  * New response format:
@@ -12,36 +29,12 @@ import api from './api';
 
 export const loginUser = async (payload) => {
   const { data } = await api.post('/auth/login', payload);
-  
-  // Extract and return new token format
-  if (data.success && data.tokens) {
-    return {
-      success: true,
-      user: data.user,
-      accessToken: data.tokens.accessToken,
-      expiresIn: data.tokens.expiresIn,
-      tokenType: data.tokens.tokenType || 'Bearer',
-    };
-  }
-  
-  return data;
+  return normalizeAuthPayload(data);
 };
 
 export const registerUser = async (payload) => {
   const { data } = await api.post('/auth/register', payload);
-  
-  // Extract and return new token format
-  if (data.success && data.tokens) {
-    return {
-      success: true,
-      user: data.user,
-      accessToken: data.tokens.accessToken,
-      expiresIn: data.tokens.expiresIn,
-      tokenType: data.tokens.tokenType || 'Bearer',
-    };
-  }
-  
-  return data;
+  return normalizeAuthPayload(data);
 };
 
 /**
@@ -51,17 +44,7 @@ export const registerUser = async (payload) => {
 export const refreshAccessToken = async () => {
   try {
     const { data } = await api.post('/auth/refresh');
-    
-    if (data.success && data.tokens) {
-      return {
-        success: true,
-        accessToken: data.tokens.accessToken,
-        expiresIn: data.tokens.expiresIn,
-        tokenType: data.tokens.tokenType || 'Bearer',
-      };
-    }
-    
-    return data;
+    return normalizeAuthPayload(data);
   } catch (error) {
     // If refresh fails, token is likely expired
     // AuthContext will handle logout
@@ -97,7 +80,7 @@ export const logoutAllDevices = async () => {
  */
 export const getProfile = async () => {
   const { data } = await api.get('/auth/me');
-  return data;
+  return data.data || data;
 };
 
 /**
@@ -105,7 +88,7 @@ export const getProfile = async () => {
  */
 export const updateProfile = async (payload) => {
   const { data } = await api.put('/auth/me', payload);
-  return data;
+  return data.data || data;
 };
 
 /**

@@ -33,12 +33,17 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const login = (payload) => {
-    const { token, ...rest } = payload;
-    if (token) {
-      localStorage.setItem(TOKEN_KEY, token);
-      setToken(token);
+    const nextUser = payload?.user || payload;
+    const nextToken = payload?.token || payload?.accessToken;
+
+    if (nextToken) {
+      localStorage.setItem(TOKEN_KEY, nextToken);
+      setToken(nextToken);
     }
-    setUser(rest);
+
+    if (nextUser) {
+      setUser(nextUser);
+    }
   };
 
   const logout = () => {

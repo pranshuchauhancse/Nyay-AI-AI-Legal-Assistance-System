@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const Session = require('../models/Session');
+const { BadRequestError, ForbiddenError, UnauthorizedError, NotFoundError } = require('../utils/AppError');
 
 const VALID_ROLES = ['citizen', 'lawyer', 'judge', 'police', 'admin'];
 const APPROVED_ADMIN_EMAILS = [
@@ -17,11 +18,44 @@ const isApprovedAdmin = (email = '') => APPROVED_ADMIN_EMAILS.includes(normalize
  * @param {string} userId - User ID
  * @returns {string} JWT access token
  */
-const generateAccessToken = (userId) => {
+const getRefreshSecret = () => process.env.REFRESH_SECRET || process.env.JWT_SECRET;
+
+const toSafeUser = (user) => ({
+  _id: user._id,
+  id: user._id,
+  name: user.name,
+  email: user.email,
+  role: user.role,
+  profilePic: user.profilePic,
+});
+
+const buildAuthResponse = (user, tokens) => ({
+  user: toSafeUser(user),
+  token: tokens.accessToken,
+  accessToken: tokens.accessToken,
+  sessionId: tokens.sessionId,
+  tokens: {
+    accessToken: tokens.accessToken,
+    expiresIn: tokens.expiresIn,
+    tokenType: 'Bearer',
+  },
+});
+
+const generateAccessToken = (user, sessionId) => {
   if (!process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is missing. Add JWT_SECRET in server/.env and restart the server.');
   }
-  return jwt.sign({ id: userId, type: 'access' }, process.env.JWT_SECRET, { expiresIn: '15m' });
+  return jwt.sign(
+    {
+      id: user._id,
+      userId: user._id,
+      role: user.role,
+      sessionId,
+      type: 'access',
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
 };
 
 /**
@@ -29,11 +63,21 @@ const generateAccessToken = (userId) => {
  * @param {string} userId - User ID
  * @returns {string} JWT refresh token
  */
-const generateRefreshToken = (userId) => {
-  if (!process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is missing. Add JWT_SECRET in server/.env and restart the server.');
+const generateRefreshToken = (user, sessionId) => {
+  if (!getRefreshSecret()) {
+    throw new Error('REFRESH_SECRET or JWT_SECRET is missing. Add it in server/.env and restart the server.');
   }
-  return jwt.sign({ id: userId, type: 'refresh' }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(
+    {
+      id: user._id,
+      userId: user._id,
+      role: user.role,
+      sessionId,
+      type: 'refresh',
+    },
+    getRefreshSecret(),
+    { expiresIn: '7d' }
+  );
 };
 
 /**
@@ -59,25 +103,27 @@ const getDeviceInfo = (req) => {
  * @param {object} req - Express request
  * @returns {object} { accessToken, refreshToken, sessionId }
  */
-const createSession = async (userId, req) => {
-  const refreshToken = generateRefreshToken(userId);
-  const refreshTokenHash = Session.hashToken(refreshToken);
+const createSession = async (user, req) => {
   const device = getDeviceInfo(req);
 
   // Expire in 7 days
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   const session = await Session.create({
-    userId,
-    refreshTokenHash,
+    userId: user._id,
+    refreshTokenHash: 'pending',
     device,
     expiresAt,
   });
 
-  // Clean old sessions - keep only 5 active sessions per user
-  await Session.cleanOldSessions(userId, 5);
+  const refreshToken = generateRefreshToken(user, session._id);
+  session.refreshTokenHash = Session.hashToken(refreshToken);
+  await session.save();
 
-  const accessToken = generateAccessToken(userId);
+  // Clean old sessions - keep only 5 active sessions per user
+  await Session.cleanOldSessions(user._id, 5);
+
+  const accessToken = generateAccessToken(user, session._id);
 
   return {
     accessToken,
@@ -94,35 +140,31 @@ const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   if (!name || !email || !password) {
-    res.status(400);
-    throw new Error('Name, email and password are required');
+    throw new BadRequestError('Name, email and password are required');
   }
 
   if (role && !VALID_ROLES.includes(role)) {
-    res.status(400);
-    throw new Error('Invalid role selected');
+    throw new BadRequestError('Invalid role selected');
   }
 
   if (role === 'admin') {
-    res.status(403);
-    throw new Error('Admin registration is disabled from public signup');
+    throw new ForbiddenError('Admin registration is disabled from public signup');
   }
 
   const normalizedEmail = normalizeEmail(email);
 
   const exists = await User.findOne({ email: normalizedEmail });
   if (exists) {
-    res.status(400);
-    throw new Error('User already exists');
+    throw new BadRequestError('User already exists');
   }
 
   const user = await User.create({ name, email: normalizedEmail, password, role });
 
   // Create session and get tokens
-  const { accessToken, refreshToken, expiresIn } = await createSession(user._id, req);
+  const tokens = await createSession(user, req);
 
   // Set refresh token in secure cookie (httpOnly, secure, sameSite)
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refresh_token', tokens.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -130,20 +172,8 @@ const registerUser = async (req, res) => {
     path: '/api/auth',
   });
 
-  res.status(201).json({
-    success: true,
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-    tokens: {
-      accessToken,
-      expiresIn,
-      tokenType: 'Bearer',
-    },
-  });
+  const data = buildAuthResponse(user, tokens);
+  res.status(201).json({ success: true, data, message: 'Registered successfully', ...data });
 };
 
 /**
@@ -153,32 +183,28 @@ const loginUser = async (req, res) => {
   const { email, password, role } = req.body;
 
   if (!email || !password) {
-    res.status(400);
-    throw new Error('Email and password are required');
+    throw new BadRequestError('Email and password are required');
   }
 
   const user = await User.findOne({ email: normalizeEmail(email) });
 
   if (!user || !(await user.matchPassword(password))) {
-    res.status(401);
-    throw new Error('Invalid credentials');
+    throw new UnauthorizedError('Invalid credentials');
   }
 
   if (role && user.role !== role) {
-    res.status(401);
-    throw new Error('Selected role does not match your account role');
+    throw new UnauthorizedError('Selected role does not match your account role');
   }
 
   if (user.role === 'admin' && !isApprovedAdmin(user.email)) {
-    res.status(403);
-    throw new Error('This admin account is not allowed to access admin dashboard');
+    throw new ForbiddenError('This admin account is not allowed to access admin dashboard');
   }
 
   // Create session and get tokens
-  const { accessToken, refreshToken, expiresIn } = await createSession(user._id, req);
+  const tokens = await createSession(user, req);
 
   // Set refresh token in secure cookie (httpOnly, secure, sameSite)
-  res.cookie('refresh_token', refreshToken, {
+  res.cookie('refresh_token', tokens.refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
@@ -186,21 +212,8 @@ const loginUser = async (req, res) => {
     path: '/api/auth',
   });
 
-  res.json({
-    success: true,
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      profilePic: user.profilePic,
-    },
-    tokens: {
-      accessToken,
-      expiresIn,
-      tokenType: 'Bearer',
-    },
-  });
+  const data = buildAuthResponse(user, tokens);
+  res.json({ success: true, data, message: 'Logged in successfully', ...data });
 };
 
 /**
@@ -212,45 +225,65 @@ const refreshAccessToken = async (req, res) => {
     const refreshToken = req.cookies.refresh_token || req.body.refreshToken;
 
     if (!refreshToken) {
-      res.status(401);
-      throw new Error('Refresh token not provided');
+      throw new UnauthorizedError('Refresh token not provided');
     }
 
     // Verify refresh token signature
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+      decoded = jwt.verify(refreshToken, getRefreshSecret());
     } catch (err) {
-      res.status(401);
-      throw new Error('Invalid or expired refresh token');
+      throw new UnauthorizedError('Invalid or expired refresh token');
     }
 
     if (decoded.type !== 'refresh') {
-      res.status(401);
-      throw new Error('Invalid token type');
+      throw new UnauthorizedError('Invalid token type');
     }
 
     // Find and verify session
     const refreshTokenHash = Session.hashToken(refreshToken);
     const session = await Session.findOne({
       userId: decoded.id,
+      _id: decoded.sessionId,
       refreshTokenHash,
     });
 
     if (!session || !session.verifyToken(refreshToken)) {
-      res.status(401);
-      throw new Error('Refresh token revoked or expired');
+      throw new UnauthorizedError('Refresh token revoked or expired');
     }
 
-    // Update last used
+    const user = await User.findById(decoded.id).select('-password');
+    if (!user) {
+      throw new UnauthorizedError('User not found');
+    }
+
+    const newRefreshToken = generateRefreshToken(user, session._id);
+    session.refreshTokenHash = Session.hashToken(newRefreshToken);
     session.lastUsedAt = new Date();
     await session.save();
 
-    // Generate new access token
-    const accessToken = generateAccessToken(decoded.id);
+    const accessToken = generateAccessToken(user, session._id);
+
+    res.cookie('refresh_token', newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/api/auth',
+    });
 
     res.json({
       success: true,
+      message: 'Token refreshed',
+      data: {
+        token: accessToken,
+        accessToken,
+        tokens: {
+          accessToken,
+          expiresIn: 15 * 60,
+          tokenType: 'Bearer',
+        },
+      },
       tokens: {
         accessToken,
         expiresIn: 15 * 60,
@@ -338,10 +371,8 @@ const logoutAllDevices = async (req, res) => {
  * Get current user profile
  */
 const getMyProfile = async (req, res) => {
-  res.json({
-    success: true,
-    user: req.user,
-  });
+  const data = { user: toSafeUser(req.user) };
+  res.json({ success: true, data, message: 'Profile loaded', ...data });
 };
 
 /**
@@ -351,8 +382,7 @@ const updateMyProfile = async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (!user) {
-    res.status(404);
-    throw new Error('User not found');
+    throw new NotFoundError('User not found');
   }
 
   if ('name' in req.body) user.name = req.body.name;
@@ -447,8 +477,7 @@ const revokeSession = async (req, res) => {
     });
 
     if (!session) {
-      res.status(404);
-      throw new Error('Session not found');
+      throw new NotFoundError('Session not found');
     }
 
     await session.revoke();

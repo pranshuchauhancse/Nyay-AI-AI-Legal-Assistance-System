@@ -22,7 +22,7 @@ const errorHandler = (err, req, res, next) => {
     500: 'INTERNAL_ERROR',
   };
 
-  const errorCode = errorCodeMap[statusCode] || 'INTERNAL_ERROR';
+  const errorCode = err.code || errorCodeMap[statusCode] || 'INTERNAL_ERROR';
   const message = err.message || 'An error occurred';
 
   // Log errors for debugging (don't expose to client)
@@ -37,11 +37,9 @@ const errorHandler = (err, req, res, next) => {
   // Return consistent error response
   res.status(statusCode).json({
     success: false,
-    data: null,
-    error: {
-      message,
-      code: errorCode,
-    },
+    message,
+    code: errorCode,
+    data: err.data || null,
     // Stack trace only in development
     ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });

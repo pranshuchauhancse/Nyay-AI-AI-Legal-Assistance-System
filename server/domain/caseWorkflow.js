@@ -1,17 +1,29 @@
 const CASE_STATUSES = [
   'Filed',
-  'Under Investigation',
-  'In Hearing',
-  'Resolved',
+  'Assigned',
+  'Investigation',
+  'Hearing',
+  'Judgment',
   'Closed',
 ];
 
+const LEGACY_STATUS_ALIASES = {
+  'Under Investigation',
+};
+
 const TRANSITIONS = {
-  Filed: ['Under Investigation', 'In Hearing', 'Closed'],
-  'Under Investigation': ['In Hearing', 'Resolved', 'Closed'],
-  'In Hearing': ['Resolved', 'Closed'],
-  Resolved: ['Closed'],
+  Filed: ['Assigned', 'Closed'],
+  Assigned: ['Investigation', 'Hearing', 'Closed'],
+  Investigation: ['Hearing', 'Judgment', 'Closed'],
+  Hearing: ['Judgment', 'Closed'],
+  Judgment: ['Closed'],
   Closed: [],
+};
+
+const STATUS_ALIASES = {
+  'Under Investigation': 'Investigation',
+  'In Hearing': 'Hearing',
+  Resolved: 'Judgment',
 };
 
 const STATUS_CHANGE_ROLES = new Set(['admin', 'judge', 'lawyer', 'police']);
@@ -44,11 +56,15 @@ const canDeleteCase = (user, legalCase) => {
   return user.role === 'admin' || normalizeId(legalCase.createdBy) === normalizeId(user._id);
 };
 
-const isValidStatus = (status) => CASE_STATUSES.includes(status);
+const normalizeStatus = (status) => STATUS_ALIASES[status] || status;
+
+const isValidStatus = (status) => CASE_STATUSES.includes(normalizeStatus(status));
 
 const canTransition = (fromStatus, toStatus) => {
-  if (fromStatus === toStatus) return true;
-  return Boolean(TRANSITIONS[fromStatus]?.includes(toStatus));
+  const from = normalizeStatus(fromStatus);
+  const to = normalizeStatus(toStatus);
+  if (from === to) return true;
+  return Boolean(TRANSITIONS[from]?.includes(to));
 };
 
 const validateCaseCreation = (user, payload = {}) => {
@@ -58,7 +74,7 @@ const validateCaseCreation = (user, payload = {}) => {
     throw error;
   }
 
-  const status = payload.status || 'Filed';
+  const status = normalizeStatus(payload.status || 'Filed');
   if (!isValidStatus(status)) {
     const error = new Error(`Invalid case status: ${status}`);
     error.statusCode = 400;
@@ -83,7 +99,7 @@ const validateCaseUpdate = (user, legalCase, updates = {}) => {
     return;
   }
 
-  const nextStatus = updates.status;
+  const nextStatus = normalizeStatus(updates.status);
   if (!isValidStatus(nextStatus)) {
     const error = new Error(`Invalid case status: ${nextStatus}`);
     error.statusCode = 400;
@@ -96,15 +112,18 @@ const validateCaseUpdate = (user, legalCase, updates = {}) => {
     throw error;
   }
 
-  if (!canTransition(legalCase.status, nextStatus)) {
-    const allowed = TRANSITIONS[legalCase.status] || [];
+  const currentStatus = normalizeStatus(legalCase.status);
+  if (!canTransition(currentStatus, nextStatus)) {
+    const allowed = TRANSITIONS[currentStatus] || [];
     const reason = allowed.length
       ? `Allowed next statuses: ${allowed.join(', ')}`
-      : `${legalCase.status} is a terminal status`;
-    const error = new Error(`Invalid case transition from ${legalCase.status} to ${nextStatus}. ${reason}`);
+      : `${currentStatus} is a terminal status`;
+    const error = new Error(`Invalid case transition from ${currentStatus} to ${nextStatus}. ${reason}`);
     error.statusCode = 400;
     throw error;
   }
+
+  updates.status = nextStatus;
 };
 
 module.exports = {
@@ -113,6 +132,7 @@ module.exports = {
   canDeleteCase,
   canTransition,
   canUpdateCase,
+  normalizeStatus,
   validateCaseCreation,
   validateCaseUpdate,
 };

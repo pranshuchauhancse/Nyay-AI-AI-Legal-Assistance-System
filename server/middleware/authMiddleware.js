@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../models/User');
+const Session = require('../models/Session');
+const { ForbiddenError, UnauthorizedError } = require('../utils/AppError');
 
 const APPROVED_ADMIN_EMAILS = [
   'pranshu121005@gmail.com',
@@ -13,8 +15,7 @@ const protect = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401);
-    throw new Error('Not authorized, token missing');
+    throw new UnauthorizedError('Not authorized, token missing');
   }
 
   try {
@@ -28,15 +29,36 @@ const protect = async (req, res, next) => {
 
     // Ensure it's an access token
     if (decoded.type !== 'access') {
-      res.status(401);
-      throw new Error('Invalid token type. Use access token.');
+      throw new UnauthorizedError('Invalid token type. Use access token.');
+    }
+
+    if (!decoded.role || !decoded.userId) {
+      throw new UnauthorizedError('Invalid token payload');
     }
 
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
-      res.status(401);
-      throw new Error('User not found');
+      throw new UnauthorizedError('User not found');
+    }
+
+    if (String(req.user._id) !== String(decoded.userId) || req.user.role !== decoded.role) {
+      throw new UnauthorizedError('Token subject does not match current user');
+    }
+
+    if (decoded.sessionId) {
+      const session = await Session.findOne({
+        _id: decoded.sessionId,
+        userId: req.user._id,
+        isRevoked: false,
+        expiresAt: { $gt: new Date() },
+      }).select('_id');
+
+      if (!session) {
+        throw new UnauthorizedError('Session expired or revoked');
+      }
+
+      req.sessionId = session._id;
     }
 
     // Verify admin access if admin role
@@ -44,8 +66,7 @@ const protect = async (req, res, next) => {
       req.user.role === 'admin' &&
       !APPROVED_ADMIN_EMAILS.includes(normalizeEmail(req.user.email))
     ) {
-      res.status(403);
-      throw new Error('Admin access denied for this account');
+      throw new ForbiddenError('Admin access denied for this account');
     }
 
     next();
@@ -53,7 +74,10 @@ const protect = async (req, res, next) => {
     if (res.statusCode < 400) {
       res.status(401);
     }
-    throw new Error(err.message || 'Not authorized, token invalid');
+    if (err.statusCode) {
+      throw err;
+    }
+    throw new UnauthorizedError(err.message || 'Not authorized, token invalid');
   }
 };
 

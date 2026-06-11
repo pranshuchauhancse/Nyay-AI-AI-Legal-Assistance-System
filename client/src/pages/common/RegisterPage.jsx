@@ -24,7 +24,7 @@ export default function RegisterPage() {
     try {
       const data = await registerUser(form);
       login(data);
-      navigate(getRoleHome(data.role), { replace: true });
+      navigate(getRoleHome(data.user?.role), { replace: true });
     } catch (err) {
       if (err.response?.status === 503) {
         setError('Database is not connected. Start MongoDB, then restart the backend.');

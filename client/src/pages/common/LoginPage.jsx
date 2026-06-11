@@ -24,12 +24,12 @@ export default function LoginPage() {
     try {
       const data = await loginUser(form);
       login(data);
-      navigate(getRoleHome(data.role), { replace: true });
+      navigate(getRoleHome(data.user?.role), { replace: true });
     } catch (err) {
       if (err.response?.status === 503) {
         setError('Database is not connected. Start MongoDB, then restart the backend.');
       } else {
-        setError(err.response?.data?.message || 'Login failed. Please try again.');
+        setError(err.response?.data?.message || err.response?.data?.error?.message || 'Login failed. Please try again.');
       }
     } finally {
       setLoading(false);

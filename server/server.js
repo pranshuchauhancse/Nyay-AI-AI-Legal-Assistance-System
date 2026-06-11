@@ -8,9 +8,10 @@ const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
-const morgan = require('morgan');
 const connectDB = require('./config/db');
+const { connectRedis } = require('./config/redis');
 const { ensureDefaultAdmins } = require('./utils/bootstrapAdmins');
+require('./events/caseEvents');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const caseRoutes = require('./routes/caseRoutes');
@@ -21,6 +22,9 @@ const reportRoutes = require('./routes/reportRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
 const { requireDatabase } = require('./middleware/dbMiddleware');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const requestLogger = require('./middleware/requestLogger');
+const { csrfProtection } = require('./middleware/csrfMiddleware');
+const logger = require('./utils/logger');
 
 // STEP 7: Validate environment variables on startup
 const validateEnvironment = () => {
@@ -74,6 +78,10 @@ connectDB().then(async (connected) => {
   }
 });
 
+connectRedis().catch((error) => {
+  logger.warn({ error: error.message }, 'redis_connect_skipped');
+});
+
 const app = express();
 
 // STEP 4: Security middleware - Helmet (headers)
@@ -84,7 +92,7 @@ const corsOptions = {
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
   credentials: true, // Allow cookies
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token'],
   maxAge: 3600,
 };
 app.use(cors(corsOptions));
@@ -93,8 +101,9 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10kb' })); // Limit payload size
 app.use(express.urlencoded({ limit: '10kb', extended: true }));
 app.use(cookieParser());
+app.use(csrfProtection);
 
-app.use(morgan('dev'));
+app.use(requestLogger);
 
 // Health check endpoint (public, no rate limiting)
 app.get('/api/health', (req, res) => {

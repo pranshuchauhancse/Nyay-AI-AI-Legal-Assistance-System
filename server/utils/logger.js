@@ -1,12 +1,11 @@
-const info = (...args) => {
-  console.log('[INFO]', ...args);
-};
+const pino = require('pino');
 
-const error = (...args) => {
-  console.error('[ERROR]', ...args);
-};
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  redact: {
+    paths: ['req.headers.authorization', 'password', 'refreshToken', 'refresh_token'],
+    remove: true,
+  },
+});
 
-module.exports = {
-  info,
-  error,
-};
+module.exports = logger;
