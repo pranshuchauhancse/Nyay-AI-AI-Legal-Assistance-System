@@ -150,14 +150,14 @@ Closed
 
 Provides **legal guidance (not advice)** using retrieval-based responses.
 
-### Features:
+### Features
 
 * Legal Q\&A
 * Source-backed answers
 * Confidence scoring
 * Chat history
 
-### Response Format:
+### Response Format
 
 ```json
 {
@@ -318,7 +318,7 @@ npm test
 npm run test
 ```
 
-### Test Types:
+### Test Types
 
 * Unit Tests
 * Integration Tests
@@ -387,4 +387,3 @@ Contributions, issues, and feature requests are welcome!
 Nyay-AI is a **real-world inspired judicial workflow platform** combining **backend engineering, security, and AI integration** — designed to scale and solve meaningful problems.
 
 ***
-
