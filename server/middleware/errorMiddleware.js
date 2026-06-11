@@ -9,7 +9,7 @@ const notFound = (req, res, next) => {
  * { success: false, error: "...", code: "..." }
  */
 const errorHandler = (err, req, res, next) => {
-  const statusCode = res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+  const statusCode = err.statusCode || (res.statusCode && res.statusCode !== 200 ? res.statusCode : 500);
   
   // Map status codes to error codes
   const errorCodeMap = {
@@ -37,8 +37,11 @@ const errorHandler = (err, req, res, next) => {
   // Return consistent error response
   res.status(statusCode).json({
     success: false,
-    error: message,
-    code: errorCode,
+    data: null,
+    error: {
+      message,
+      code: errorCode,
+    },
     // Stack trace only in development
     ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
   });

@@ -75,7 +75,14 @@ const caseSchema = new mongoose.Schema(
       default: 'Medium',
     },
   },
-  { timestamps: true }
+  { optimisticConcurrency: true, timestamps: true }
 );
+
+caseSchema.index({ createdBy: 1 });
+caseSchema.index({ assignedTo: 1 });
+caseSchema.index({ assignedLawyer: 1 });
+caseSchema.index({ policeOfficer: 1 });
+caseSchema.index({ judge: 1 });
+caseSchema.index({ status: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Case', caseSchema);

@@ -24,7 +24,7 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
 // STEP 7: Validate environment variables on startup
 const validateEnvironment = () => {
-  const requiredVars = ['JWT_SECRET', 'MONGO_URI'];
+  const requiredVars = ['JWT_SECRET', 'REFRESH_SECRET'];
   const missing = requiredVars.filter(v => !process.env[v]);
   
   if (missing.length > 0) {
@@ -129,6 +129,4 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
   console.log('ℹ️  You can connect MongoDB later by setting MONGO_URI in server/.env');
-});
-  console.log('Note: You can connect MongoDB later by setting MONGO_URI in server/.env');
 });

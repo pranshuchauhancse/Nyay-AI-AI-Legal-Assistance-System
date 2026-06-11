@@ -1,492 +1,328 @@
-# Nyay-AI
 
-**AI-Powered Legal Assistance & Judicial Workflow Management Platform**
+***
 
-Nyay-AI is a production-oriented full-stack MERN application designed to streamline legal assistance, judicial workflows, and case management through secure role-based access control, intelligent automation, and AI-assisted legal information retrieval.
+# ⚖️ Nyay-AI
 
-The platform provides dedicated workspaces for Citizens, Lawyers, Judges, Police Officers, and Administrators while maintaining security, auditability, and legal workflow consistency.
+### AI-Powered Legal Assistance & Judicial Workflow Management Platform
 
----
+Nyay-AI is a **full-stack MERN application** built to modernize legal workflows by integrating **secure case management, role-based access control, real-time collaboration, and AI-powered legal assistance**.
 
-# Table of Contents
+It provides dedicated dashboards and workflows for **Citizens, Lawyers, Judges, Police Officers, and Administrators**, ensuring secure, transparent, and efficient judicial processes.
 
-* [1. Project Overview](#1-project-overview)
-* [2. Core Architecture](#2-core-architecture)
-* [3. Features](#3-features)
-* [4. Security Architecture](#4-security-architecture)
-* [5. Case Workflow Engine](#5-case-workflow-engine)
-* [6. AI Legal Assistant](#6-ai-legal-assistant)
-* [7. Setup and Run](#7-setup-and-run)
-* [8. API Structure](#8-api-structure)
-* [9. Project Structure](#9-project-structure)
-* [10. UI & UX System](#10-ui--ux-system)
-* [11. Deployment](#11-deployment)
-* [12. Testing](#12-testing)
+***
 
----
+## 🚀 Key Highlights
 
-# 1. Project Overview
+* 🔐 Secure Authentication (JWT + Refresh Tokens)
+* 🧑‍⚖️ Multi-role Access Control (RBAC + Ownership)
+* 📂 End-to-End Case Lifecycle Management
+* 🤖 AI-Powered Legal Assistant (RAG-based)
+* ⚡ Real-time Notifications (Socket.io)
+* 🕒 Audit Logging & Activity Tracking
+* 📅 Appointment & Hearing Scheduling
+* 🔄 Background Job Processing (BullMQ)
 
-Nyay-AI modernizes legal workflows by combining:
+***
 
-* Secure authentication
-* Permission-based authorization
-* Case lifecycle management
-* Appointment scheduling
-* Legal information retrieval
-* AI-powered assistance
-* Audit logging
-* Real-time updates
+## 🏗️ System Architecture
 
-The system is designed to support both internal judicial workflows and citizen-facing legal services.
-
----
-
-## Technology Stack
-
-| Layer          | Technology                 |
-| -------------- | -------------------------- |
-| Frontend       | React, React Router, Axios |
-| Backend        | Node.js, Express.js        |
-| Database       | MongoDB + Mongoose         |
-| Authentication | JWT + Refresh Tokens       |
-| Authorization  | RBAC + Ownership           |
-| Validation     | Zod                        |
-| AI             | OpenAI API                 |
-| Queue          | BullMQ                     |
-| Storage        | Cloud Storage              |
-| Realtime       | Socket.io                  |
-
----
-
-## User Roles
-
-| Role    | Responsibilities                  |
-| ------- | --------------------------------- |
-| Citizen | Cases, appointments, AI assistant |
-| Lawyer  | Client and case management        |
-| Judge   | Hearings and judgments            |
-| Police  | Investigation and reporting       |
-| Admin   | User and system administration    |
-
----
-
-# 2. Core Architecture
-
-## System Flow
+### 🔹 Core Flow
 
 ```text
-React Client
-     ↓
+Client (React)
+   ↓
 API Gateway
-     ↓
-Auth Layer
-     ↓
-RBAC
-     ↓
-Services
-     ↓
-Repositories
-     ↓
-MongoDB
+   ↓
+Authentication Layer
+   ↓
+RBAC Authorization
+   ↓
+Services Layer
+   ↓
+Database (MongoDB)
 ```
 
-AI Pipeline:
+### 🔹 AI Pipeline
 
 ```text
-User
- ↓
+User Query
+   ↓
 Retriever
- ↓
+   ↓
 Legal Sources
- ↓
+   ↓
 OpenAI
- ↓
+   ↓
 Structured Response
 ```
 
-Background Processing:
+### 🔹 Background Jobs
 
 ```text
-API
- ↓
-Queue
- ↓
-Workers
+API → Queue → Worker → Execution
 ```
 
----
+***
 
-# 3. Features
+## 🧑‍🤝‍🧑 User Roles
 
-## Authentication
+| Role    | Capabilities                            |
+| ------- | --------------------------------------- |
+| Citizen | File cases, track status, AI assistance |
+| Lawyer  | Manage clients & cases                  |
+| Judge   | Conduct hearings & publish judgments    |
+| Police  | Investigation & reporting               |
+| Admin   | User & system management                |
 
-* Access Token authentication
-* Refresh Token rotation
-* Secure cookie storage
+***
+
+## 📂 Features
+
+### 🔐 Authentication
+
+* Access & Refresh Tokens
+* Secure cookies
 * Multi-session support
 * Session revocation
 
----
+***
 
-## Authorization
+### 🛡️ Authorization
 
 * Role-based permissions
-* Ownership verification
-* Assignment enforcement
-* Protected APIs
+* Ownership validation
+* Assignment-based access
 
----
+***
 
-## Case Management
+### ⚖️ Case Management
 
-* Case creation
-* Case tracking
+* Case creation & tracking
+* Lifecycle management
 * Timeline history
-* Assignment workflow
 * Hearing scheduling
 * Judgment publication
 
----
+***
 
-## Notifications
+### 🔔 Notifications
 
 * Real-time updates
-* Appointment alerts
-* Hearing reminders
+* Appointment reminders
+* Case activity alerts
 
----
+***
 
-## Audit System
+### 📝 Audit System
 
 Tracks:
 
 * Login events
-* Case updates
+* Case modifications
+* Role actions
 * AI usage
-* Assignment history
 * Judgment records
 
----
+***
 
-# 4. Security Architecture
-
-Security layers:
-
-```text
-Client
-↓
-Secure Cookie
-↓
-JWT
-↓
-RBAC
-↓
-Validation
-↓
-Audit Logs
-```
-
-Implemented:
-
-* Helmet
-* Rate limiting
-* Secure cookies
-* Environment validation
-* Input validation
-* Protected APIs
-
----
-
-## Environment Variables
-
-Create:
-
-server/.env
-
-```env
-PORT=5000
-
-MONGO_URI=
-
-JWT_SECRET=
-
-REFRESH_SECRET=
-
-OPENAI_API_KEY=
-
-OPENAI_MODEL=
-
-REDIS_URL=
-```
-
-Frontend:
-
-client/.env
-
-```env
-REACT_APP_API_URL=
-```
-
----
-
-# 5. Case Workflow Engine
-
-Cases move through controlled states.
+## ⚙️ Case Workflow Engine
 
 ```text
 Filed
- ↓
+  ↓
 Assigned
- ↓
+  ↓
 Investigation
- ↓
+  ↓
 Hearing
- ↓
+  ↓
 Judgment
- ↓
+  ↓
 Closed
 ```
 
-Invalid transitions are rejected.
+✅ Invalid transitions are prevented  
+✅ Every action is logged in timeline
 
-Timeline:
+***
 
-```text
-Actor
-Action
-Timestamp
-```
+## 🤖 AI Legal Assistant
 
----
+Provides **legal guidance (not advice)** using retrieval-based responses.
 
-# 6. AI Legal Assistant
+### Features:
 
-Nyay-AI provides legal information support.
+* Legal Q\&A
+* Source-backed answers
+* Confidence scoring
+* Chat history
 
-Capabilities:
-
-* Legal question answering
-* Source retrieval
-* Confidence estimation
-* Conversation history
-
-Response:
+### Response Format:
 
 ```json
 {
- "answer":"",
- "sources":[],
- "confidence":0.91
+  "answer": "string",
+  "sources": ["source1", "source2"],
+  "confidence": 0.91
 }
 ```
 
-Rules:
+⚠ Disclaimer: Not a substitute for professional legal counsel.
 
-* No legal representation
-* No unsupported claims
-* Responses include disclaimers
+***
 
----
+## 🧰 Tech Stack
 
-# 7. Setup and Run
+| Layer      | Technology                 |
+| ---------- | -------------------------- |
+| Frontend   | React, React Router, Axios |
+| Backend    | Node.js, Express           |
+| Database   | MongoDB, Mongoose          |
+| Auth       | JWT, Refresh Tokens        |
+| Validation | Zod                        |
+| AI         | OpenAI API                 |
+| Queue      | BullMQ                     |
+| Realtime   | Socket.io                  |
+| Storage    | Cloud Storage              |
 
-## Install Dependencies
+***
 
-```bash
-npm run install:all
-```
-
----
-
-## Run Development
-
-```bash
-npm run dev
-```
-
-Services:
-
-| Service  | URL                   |
-| -------- | --------------------- |
-| Frontend | http://localhost:3000 |
-| Backend  | http://localhost:5000 |
-| Health   | /api/health           |
-
----
-
-## Individual Services
-
-Backend:
-
-```bash
-npm run server
-```
-
-Frontend:
-
-```bash
-npm run client
-```
-
----
-
-# 8. API Structure
-
-| Feature      | Endpoint          |
-| ------------ | ----------------- |
-| Health       | GET /api/health   |
-| Auth         | /api/auth         |
-| Users        | /api/users        |
-| Cases        | /api/cases        |
-| Clients      | /api/clients      |
-| Appointments | /api/appointments |
-| Reports      | /api/reports      |
-| AI           | /api/ai           |
-| Chatbot      | /api/chatbot      |
-
-Versioning:
-
-```text
-/api/v1
-```
-
----
-
-# 9. Project Structure
+## 📦 Project Structure
 
 ```text
 Nyay-AI/
 
 client/
-
- src/
-
-  components/
-
-  features/
-
-   auth/
-
-   dashboard/
-
-   cases/
-
-   appointments/
-
-  services/
-
-  routes/
+ └── src/
+     ├── components/
+     ├── features/
+     │   ├── auth/
+     │   ├── dashboard/
+     │   ├── cases/
+     │   └── appointments/
+     ├── services/
+     └── routes/
 
 server/
-
- config/
-
- middleware/
-
- models/
-
- policies/
-
- validators/
-
- routes/
-
- controllers/
-
- services/
-
- jobs/
-
- tests/
+ ├── config/
+ ├── middleware/
+ ├── models/
+ ├── policies/
+ ├── validators/
+ ├── controllers/
+ ├── services/
+ ├── jobs/
+ └── tests/
 ```
 
----
+***
 
-# 10. UI & UX System
+## 🔌 API Endpoints
 
-Principles:
+| Feature      | Endpoint            |
+| ------------ | ------------------- |
+| Health       | `/api/health`       |
+| Auth         | `/api/auth`         |
+| Users        | `/api/users`        |
+| Cases        | `/api/cases`        |
+| Appointments | `/api/appointments` |
+| Reports      | `/api/reports`      |
+| AI           | `/api/ai`           |
+| Chatbot      | `/api/chatbot`      |
 
-* Workflow-first
-* Mobile responsive
-* Accessible
-* Consistent navigation
-
-UI Components:
+🔖 Versioning:
 
 ```text
-Sidebar
-Top Navbar
-Dashboard
-Cards
-Timeline
-Chat
-Tables
+/api/v1
 ```
 
-Features:
+***
 
-* Search
-* Filters
-* Pagination
-* Skeleton loaders
-* Empty states
+## ⚙️ Setup & Installation
 
----
-
-# 11. Deployment
-
-Frontend:
-
-```text
-Vercel
-```
-
-Backend:
-
-```text
-Railway
-```
-
-Database:
-
-```text
-Mongo Atlas
-```
-
-Storage:
-
-```text
-Cloud Storage
-```
-
-Monitoring:
-
-```text
-Sentry
-```
-
----
-
-# 12. Testing
-
-Backend:
+### 1️⃣ Clone Repository
 
 ```bash
+git clone https://github.com/your-username/nyay-ai.git
+cd nyay-ai
+```
+
+***
+
+### 2️⃣ Install Dependencies
+
+```bash
+npm run install:all
+```
+
+***
+
+### 3️⃣ Configure Environment Variables
+
+#### Backend (`server/.env`)
+
+```env
+PORT=5000
+MONGO_URI=your_mongo_uri
+JWT_SECRET=your_secret
+REFRESH_SECRET=your_refresh_secret
+OPENAI_API_KEY=your_api_key
+OPENAI_MODEL=gpt-4
+REDIS_URL=your_redis_url
+```
+
+#### Frontend (`client/.env`)
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+```
+
+***
+
+### 4️⃣ Run Development
+
+```bash
+npm run dev
+```
+
+***
+
+### 🔗 Services
+
+| Service  | URL                     |
+| -------- | ----------------------- |
+| Frontend | <http://localhost:3000> |
+| Backend  | <http://localhost:5000> |
+| Health   | /api/health             |
+
+***
+
+## 🚀 Deployment
+
+| Layer      | Platform      |
+| ---------- | ------------- |
+| Frontend   | Vercel        |
+| Backend    | Railway       |
+| Database   | MongoDB Atlas |
+| Monitoring | Sentry        |
+
+***
+
+## 🧪 Testing
+
+```bash
+# Backend
 npm test
-```
 
-Frontend:
-
-```bash
+# Frontend
 npm run test
 ```
 
-Testing Types:
+### Test Types:
 
-* Unit
-* Integration
-* End-to-End
+* Unit Tests
+* Integration Tests
+* End-to-End Tests
 
 Tools:
 
@@ -494,20 +330,61 @@ Tools:
 * Supertest
 * Playwright
 
----
+***
 
-# Security Notes
+## 🔐 Security Practices
 
-* Never commit .env
-* Rotate secrets
-* Enable HTTPS
+* Secure JWT handling
+* Rate limiting
+* Input validation (Zod)
+* Helmet security headers
+* Audit logging
+* Environment variable protection
+
+⚠️ Best Practices:
+
+* Never commit `.env`
+* Rotate secrets regularly
+* Use HTTPS
 * Monitor API usage
-* Audit all changes
 
----
+***
 
-# License
+## 📸 UI Preview *(Add screenshots here)*
 
-Copyright (c) 2026 Rohit Chauhan
+* Dashboard
+* Case timeline
+* AI assistant
+* Appointment system
 
-All rights reserved.
+***
+
+## 📈 Future Improvements
+
+* Redis caching layer
+* Advanced search (ElasticSearch)
+* Document upload & verification
+* AI hallucination control
+* CI/CD pipeline (GitHub Actions)
+
+***
+
+## 📄 License
+
+Copyright © 2026 Rohit Chauhan  
+All Rights Reserved
+
+***
+
+## ⭐ Contribution
+
+Contributions, issues, and feature requests are welcome!
+
+***
+
+# 🔥 Final Note
+
+Nyay-AI is a **real-world inspired judicial workflow platform** combining **backend engineering, security, and AI integration** — designed to scale and solve meaningful problems.
+
+***
+
