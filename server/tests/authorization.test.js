@@ -156,7 +156,7 @@ console.log('\n🔄 INTEGRATION TESTS: canView, canModify, canDelete\n');
 // Test 13: Lawyer can view owned resource
 console.log('Test 13: Lawyer can view owned resource');
 console.assert(
-  accessControl.canView(testUser, testResource, 'view', 'userId'),
+  accessControl.canView(testUser, testResource, 'case:view', 'userId'),
   '❌ FAILED: Lawyer should view own resource'
 );
 console.log('✅ PASSED: Lawyer can view owned resource\n');
@@ -164,7 +164,7 @@ console.log('✅ PASSED: Lawyer can view owned resource\n');
 // Test 14: Lawyer cannot view unowned resource
 console.log('Test 14: Lawyer cannot view unowned resource');
 console.assert(
-  !accessControl.canView(testUser, otherUserResource, 'view', 'userId'),
+  !accessControl.canView(testUser, otherUserResource, 'case:view', 'userId'),
   '❌ FAILED: Lawyer should NOT view other resource'
 );
 console.log('✅ PASSED: Lawyer cannot view unowned resource\n');
@@ -172,7 +172,7 @@ console.log('✅ PASSED: Lawyer cannot view unowned resource\n');
 // Test 15: Lawyer can modify owned resource
 console.log('Test 15: Lawyer can modify owned resource');
 console.assert(
-  accessControl.canModify(testUser, testResource, 'update', 'userId'),
+  accessControl.canModify(testUser, testResource, 'case:update', 'userId'),
   '❌ FAILED: Lawyer should modify own resource'
 );
 console.log('✅ PASSED: Lawyer can modify owned resource\n');
@@ -188,7 +188,7 @@ console.log('✅ PASSED: Citizen cannot delete resources\n');
 // Test 17: Admin can delete resources
 console.log('Test 17: Admin can delete resources');
 console.assert(
-  accessControl.canDelete(adminUser, testResource),
+  accessControl.canDelete(adminUser, testResource, 'case:delete'),
   '❌ FAILED: Admin should delete resources'
 );
 console.log('✅ PASSED: Admin can delete resources\n');
